@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-06-05 14:51:16 by Eclipse SUMO libsumo Version 1.18.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/libsumoConfiguration.xsd">
+
+    <input>
+        <net-file value="D:\OneDrive - CUHK-Shenzhen\RA_419\traffic_monitoring\code\TrafficMonitor\./sumo_envs/LONG_GANG/env/osm.net.xml"/>
+        <route-files value="D:\OneDrive - CUHK-Shenzhen\RA_419\traffic_monitoring\code\TrafficMonitor\./sumo_envs/LONG_GANG/env/osm.rou.xml"/>
+        <additional-files value="D:\OneDrive - CUHK-Shenzhen\RA_419\traffic_monitoring\code\TrafficMonitor\./sumo_envs/LONG_GANG/env/../add/tls.add.xml,D:\OneDrive - CUHK-Shenzhen\RA_419\traffic_monitoring\code\TrafficMonitor\./sumo_envs/LONG_GANG/env/ ../add/e2.add.xml"/>
+    </input>
+
+    <output>
+        <tripinfo-output.write-unfinished value="true"/>
+    </output>
+
+    <processing>
+        <time-to-teleport value="-1"/>
+        <waiting-time-memory value="10000"/>
+        <max-depart-delay value="100000"/>
+    </processing>
+
+    <report>
+        <no-warnings value="true"/>
+        <no-step-log value="true"/>
+    </report>
+
+    <random_number>
+        <random value="true"/>
+    </random_number>
+
+    <gui_only>
+        <gui-settings-file value="D:\OneDrive - CUHK-Shenzhen\RA_419\traffic_monitoring\code\TrafficMonitor\./sumo_envs/LONG_GANG/env/viewsettings.xml"/>
+    </gui_only>
+
+</configuration>
