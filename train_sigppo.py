@@ -100,7 +100,7 @@ if __name__ == '__main__':
     params = {
         'num_seconds':args.num_seconds,
         'sumo_cfg':sumo_cfg,
-        'use_gui':False,
+        'use_gui':True,
         # "net_file": net_file,
         'log_file':log_path,
         'aircraft_inits':aircraft_inits,
