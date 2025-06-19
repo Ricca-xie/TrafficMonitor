@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-06-06 12:27:55 by Eclipse SUMO GUI Version 1.23.1
+<!-- generated on 2025-06-19 11:54:51 by Eclipse SUMO GUI Version 1.23.1
 <sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
 
     <input>
@@ -25,7 +25,7 @@
     </report>
 
     <traci_server>
-        <remote-port value="63346"/>
+        <remote-port value="64334"/>
     </traci_server>
 
     <random_number>
@@ -44,11 +44,6 @@
 <additional xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/additional_file.xsd">
     <tlLogic id="6742070435" type="static" programID="0">
         <phase duration="79.00" state="GGGG"/>
-        <phase duration="6.00"  state="yyyy"/>
-        <phase duration="5.00"  state="rrrr"/>
-        <phase duration="79.00" state="GGGG"/>
-        <phase duration="6.00"  state="yyyy"/>
-        <phase duration="5.00"  state="rrrr"/>
-        <phase duration="48.00" state="GGGG"/>
+        <phase duration="3.00"  state="yyyy"/>
     </tlLogic>
 </additional>

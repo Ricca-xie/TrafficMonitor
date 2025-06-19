@@ -34,9 +34,9 @@ if __name__ == '__main__':
     aircraft_inits = {
         'drone_1': {
             "aircraft_type": "drone",
-            "action_type": "combined_movement",
-            "position":(1400, 960, 50), "speed":10, "heading":(1,1,0), "communication_range":50,
-            "if_sumo_visualization": False, "img_file": path_convert('./asset/drone.png'),
+            "action_type": "horizontal_movement",
+            "position": (1750, 1000, 50), "speed": 10, "heading": (1, 1, 0), "communication_range": 50,
+            "if_sumo_visualization": True, "img_file": path_convert('./asset/drone.png'),
             "custom_update_cover_radius":custom_update_cover_radius # 使用自定义覆盖范围的计算
         },
         # 'drone_2': {
@@ -52,16 +52,16 @@ if __name__ == '__main__':
         sumo_cfg=sumo_cfg,
         num_seconds=1200,
         aircraft_inits=aircraft_inits,
-        use_gui=False
+        use_gui=True
     )
-    ac_env_wrapper = ACEnvWrapper(env=ac_env)
+    ac_env_wrapper = ACEnvWrapper(env=ac_env, aircraft_inits=aircraft_inits)
 
     done = False
     ac_env_wrapper.reset()
     import random
     while not done:
         action = {
-            "drone_1": (10, np.random.randint(8)),
+            "drone_1": (3, 0),
             # "drone_1": (3, random.choice([0, 4]) ),
         }
         states, rewards, truncated, done, infos = ac_env_wrapper.step(action=action)

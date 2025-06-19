@@ -22,7 +22,7 @@ def make_env(
             aircraft_inits=aircraft_inits,
             use_gui=use_gui
         )
-        ac_wrapper = ACEnvWrapper(env=ac_env)
+        ac_wrapper = ACEnvWrapper(env=ac_env, aircraft_inits=aircraft_inits)
         ac_env = Monitor(ac_wrapper, filename=f'{log_file}/{env_index}')
         return ac_env
 

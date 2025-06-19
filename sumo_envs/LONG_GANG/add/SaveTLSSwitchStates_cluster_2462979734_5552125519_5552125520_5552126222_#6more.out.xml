@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-06-06 12:27:55 by Eclipse SUMO GUI Version 1.23.1
+<!-- generated on 2025-06-19 11:54:51 by Eclipse SUMO GUI Version 1.23.1
 <sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
 
     <input>
@@ -25,7 +25,7 @@
     </report>
 
     <traci_server>
-        <remote-port value="63346"/>
+        <remote-port value="64334"/>
     </traci_server>
 
     <random_number>
@@ -45,12 +45,4 @@
     <tlsState time="0.00" id="cluster_2462979734_5552125519_5552125520_5552126222_#6more" programID="0" phase="0" state="GGGggGGGGggrrrrrr"/>
     <tlsState time="39.00" id="cluster_2462979734_5552125519_5552125520_5552126222_#6more" programID="0" phase="1" state="yyyyyyyyyyyrrrrrr"/>
     <tlsState time="45.00" id="cluster_2462979734_5552125519_5552125520_5552126222_#6more" programID="0" phase="2" state="GrrrrrrrrrrGGGGGg"/>
-    <tlsState time="84.00" id="cluster_2462979734_5552125519_5552125520_5552126222_#6more" programID="0" phase="3" state="yrrrrrrrrrryyyyyy"/>
-    <tlsState time="90.00" id="cluster_2462979734_5552125519_5552125520_5552126222_#6more" programID="0" phase="0" state="GGGggGGGGggrrrrrr"/>
-    <tlsState time="129.00" id="cluster_2462979734_5552125519_5552125520_5552126222_#6more" programID="0" phase="1" state="yyyyyyyyyyyrrrrrr"/>
-    <tlsState time="135.00" id="cluster_2462979734_5552125519_5552125520_5552126222_#6more" programID="0" phase="2" state="GrrrrrrrrrrGGGGGg"/>
-    <tlsState time="174.00" id="cluster_2462979734_5552125519_5552125520_5552126222_#6more" programID="0" phase="3" state="yrrrrrrrrrryyyyyy"/>
-    <tlsState time="180.00" id="cluster_2462979734_5552125519_5552125520_5552126222_#6more" programID="0" phase="0" state="GGGggGGGGggrrrrrr"/>
-    <tlsState time="219.00" id="cluster_2462979734_5552125519_5552125520_5552126222_#6more" programID="0" phase="1" state="yyyyyyyyyyyrrrrrr"/>
-    <tlsState time="225.00" id="cluster_2462979734_5552125519_5552125520_5552126222_#6more" programID="0" phase="2" state="GrrrrrrrrrrGGGGGg"/>
 </tlsStates>

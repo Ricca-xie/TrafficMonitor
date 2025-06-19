@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-06-06 12:27:55 by Eclipse SUMO GUI Version 1.23.1
+<!-- generated on 2025-06-19 11:54:51 by Eclipse SUMO GUI Version 1.23.1
 <sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
 
     <input>
@@ -25,7 +25,7 @@
     </report>
 
     <traci_server>
-        <remote-port value="63346"/>
+        <remote-port value="64334"/>
     </traci_server>
 
     <random_number>
@@ -46,8 +46,4 @@
    <tlsSwitch id="6742070435" programID="0" fromLane="1125597092#1.222_1" toLane="1125597092#2_1" begin="0.00" end="79.00" duration="79.00"/>
    <tlsSwitch id="6742070435" programID="0" fromLane="1125597092#1.222_2" toLane="1125597092#2_2" begin="0.00" end="79.00" duration="79.00"/>
    <tlsSwitch id="6742070435" programID="0" fromLane="1125597092#1.222_3" toLane="1125597092#2_3" begin="0.00" end="79.00" duration="79.00"/>
-   <tlsSwitch id="6742070435" programID="0" fromLane="1125597092#1.222_0" toLane="1125597092#2_0" begin="90.00" end="169.00" duration="79.00"/>
-   <tlsSwitch id="6742070435" programID="0" fromLane="1125597092#1.222_1" toLane="1125597092#2_1" begin="90.00" end="169.00" duration="79.00"/>
-   <tlsSwitch id="6742070435" programID="0" fromLane="1125597092#1.222_2" toLane="1125597092#2_2" begin="90.00" end="169.00" duration="79.00"/>
-   <tlsSwitch id="6742070435" programID="0" fromLane="1125597092#1.222_3" toLane="1125597092#2_3" begin="90.00" end="169.00" duration="79.00"/>
 </tlsSwitches>
