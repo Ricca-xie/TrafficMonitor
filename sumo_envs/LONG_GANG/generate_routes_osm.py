@@ -19,12 +19,12 @@ sumo_net = current_file_path("./env/osm.net.xml")
 # 指定要生成的路口 id 和探测器保存的位置
 generate_route(
     sumo_net=sumo_net,
-    interval=[1,1,1,1,1,1,1,1,1,1],
+    interval=[1,1,1,1],
     edge_flow_per_minute={
         #'1125678574': [np.random.randint(10, 15) for _ in range(4)],
         #'1125695391#0.789': [np.random.randint(10, 15) for _ in range(4)],
         #'1125684496#0': [np.random.randint(5, 10) for _ in range(4)],
-        '1125684496#0': [5,0,5,0,5,0,5,0,5,0],
+        '1125684496#0': [5,0,5,0],
         #'1125691753#1': [np.random.randint(10, 15) for _ in range(4)],
         #'1125695392#0': [np.random.randint(3, 5) for _ in range(4)],
         #'1125793701#3': [np.random.randint(10, 15) for _ in range(4)],

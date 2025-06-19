@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-06-19 11:54:51 by Eclipse SUMO GUI Version 1.23.1
-<sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+<!-- generated on 2025-06-19 13:44:34 by Eclipse SUMO libsumo Version 1.23.1
+<libsumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/libsumoConfiguration.xsd">
 
     <input>
         <net-file value="C:\TrafficMonitor\TrafficMonitor\./sumo_envs/LONG_GANG/env/osm.net.xml"/>
@@ -24,21 +24,15 @@
         <no-step-log value="true"/>
     </report>
 
-    <traci_server>
-        <remote-port value="64334"/>
-    </traci_server>
-
     <random_number>
         <random value="true"/>
     </random_number>
 
     <gui_only>
         <gui-settings-file value="C:\TrafficMonitor\TrafficMonitor\./sumo_envs/LONG_GANG/env/viewsettings.xml"/>
-        <quit-on-end value="true"/>
-        <start value="true"/>
     </gui_only>
 
-</sumoConfiguration>
+</libsumoConfiguration>
 -->
 
 <tlsStates xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/tlsstates_file.xsd">
@@ -49,4 +43,12 @@
     <tlsState time="45.00" id="T2" programID="0" phase="4" state="rrrrrrGGGGrrrrrrGGGGrr"/>
     <tlsState time="72.00" id="T2" programID="0" phase="5" state="rrrrrryyyyrrrrrryyyyrr"/>
     <tlsState time="78.00" id="T2" programID="0" phase="6" state="rrrrrrrrrrGrrrrrrrrrGG"/>
+    <tlsState time="84.00" id="T2" programID="0" phase="7" state="rrrrrrrrrryrrrrrrrrryy"/>
+    <tlsState time="90.00" id="T2" programID="0" phase="0" state="GGGGGrrrrrrGGGGrrrrrrr"/>
+    <tlsState time="117.00" id="T2" programID="0" phase="1" state="yyyyyrrrrrryyyyrrrrrrr"/>
+    <tlsState time="123.00" id="T2" programID="0" phase="2" state="rrrrrGrrrrrrrrrGrrrrrr"/>
+    <tlsState time="129.00" id="T2" programID="0" phase="3" state="rrrrryrrrrrrrrryrrrrrr"/>
+    <tlsState time="135.00" id="T2" programID="0" phase="4" state="rrrrrrGGGGrrrrrrGGGGrr"/>
+    <tlsState time="162.00" id="T2" programID="0" phase="5" state="rrrrrryyyyrrrrrryyyyrr"/>
+    <tlsState time="168.00" id="T2" programID="0" phase="6" state="rrrrrrrrrrGrrrrrrrrrGG"/>
 </tlsStates>

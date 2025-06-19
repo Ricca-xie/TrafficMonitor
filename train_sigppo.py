@@ -50,7 +50,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Parameters.')
     parser.add_argument('--env_name', type=str, default="LONG_GANG", help='The name of environment')
     parser.add_argument('--speed', type=int, default=160, help="100,160,320") # speed决定了地图的scale
-    parser.add_argument('--num_envs', type=int, default=10, help='The number of environments')
+    parser.add_argument('--num_envs', type=int, default=1, help='The number of environments')
     parser.add_argument('--policy_model', type=str, default="baseline", help='policy network: baseline_models or fusion_models_0')
     parser.add_argument('--features_dim', type=int, default=512, help='The dimension of output features 64')
     parser.add_argument('--num_seconds', type=int, default=300, help='exploration steps')
@@ -72,7 +72,7 @@ if __name__ == '__main__':
         'drone_1': {
             "aircraft_type": "drone",
             "action_type": "horizontal_movement", # combined_movement
-            "position": (1750, 1000, 50), "speed": 15, "heading": (1, 1, 0), "communication_range": 50,
+            "position": (1750, 1000, 50), "speed": 10, "heading": (1, 1, 0), "communication_range": 50,
             "if_sumo_visualization": False, "img_file": path_convert('./asset/drone.png'),
             "custom_update_cover_radius": custom_update_cover_radius  # 使用自定义覆盖范围的计算
         },

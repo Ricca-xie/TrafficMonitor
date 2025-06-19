@@ -54,7 +54,7 @@ class ACEnvWrapper(gym.Wrapper):
             6: (speed, 6),  # ↓ 正下
             7: (speed, 7),  # ↘ 右下
         }
-        self.end_point = [-345,-40]
+        self.end_point = [-540,-240]
         self.last_action = {}
 
     def get_relative_pos(self, aircraft_id, pos) -> List:
@@ -189,7 +189,7 @@ class ACEnvWrapper(gym.Wrapper):
 
             proximity_bonus = 0
             midpoint_bonus = 0
-            d_max = 200
+            d_max = 300
             veh_keys = list(self.latest_veh_pos.keys())
             if len(veh_keys) > 2:
                 first_veh_id = veh_keys[0]
@@ -257,7 +257,7 @@ class ACEnvWrapper(gym.Wrapper):
                     bound_penalty = -10 # -= abs(_x) - self.x_range
                     reward += bound_penalty
 
-                if abs(_x) > self.x_range:
+                if abs(_y) > self.x_range:
                     dones = True
                     bound_penalty = -50
                     reward += bound_penalty
@@ -288,8 +288,8 @@ class ACEnvWrapper(gym.Wrapper):
         self.y_max = 1000 # self.side_length
         # calculate the max-height (to limit the height)
         #self.h_max = (self.side_length / 10) * math.tan(math.radians(75 / 2))
-        self.x_range = 450
-        self.y_range = 450
+        self.x_range = 600
+        self.y_range = 400
 
         state, _ = self.state_wrapper(state=state)
         return state, {'step_time':0}
