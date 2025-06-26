@@ -15,6 +15,7 @@ class CustomModel(BaseFeaturesExtractor):
         """
         super().__init__(observation_space, features_dim)
         ac_attr_dim = observation_space["ac_attr"].shape[0]
+        # veh_traj_dim = observation_space["veh_traj"].shape[0]
         veh_pos_dim = observation_space["relative_vecs"].shape[0]
         bound_dim = observation_space["bound_dist"].shape[0]
         # veh_info_dim = observation_space["cover_counts"].shape[0]
@@ -25,7 +26,11 @@ class CustomModel(BaseFeaturesExtractor):
             nn.Linear(ac_attr_dim, self.hidden_dim),
             nn.ReLU(),
         )
-        self.linear_encoder_veh = nn.Sequential(
+        # self.linear_encoder_veh_traj = nn.Sequential(
+        #     nn.Linear(veh_traj_dim, self.hidden_dim),
+        #     nn.ReLU(),
+        # )
+        self.linear_encoder_veh_pos = nn.Sequential(
             nn.Linear(veh_pos_dim, self.hidden_dim),
             nn.ReLU(),
         )
@@ -52,7 +57,8 @@ class CustomModel(BaseFeaturesExtractor):
 
     def forward(self, observations):
         ac_attr = observations["ac_attr"]
-        veh_pos_dim = observations["relative_vecs"]
+        # veh_traj = observations["veh_traj"]
+        veh_pos = observations["relative_vecs"]
         veh_covered = observations["cover_counts"]
         bound = observations["bound_dist"]
         action_dir = observations["action_dir"]
@@ -61,7 +67,8 @@ class CustomModel(BaseFeaturesExtractor):
         #     print(k,"shape",v.shape)
 
         ac_feat = self.linear_encoder_ac(ac_attr)
-        veh_feat = self.linear_encoder_veh(veh_pos_dim)
+        # traj_feat = self.linear_encoder_veh_traj(veh_traj)
+        veh_feat = self.linear_encoder_veh_pos(veh_pos)
         bound_feat = self.linear_encoder_bound(bound)
         action_feat = self.linear_encoder_action(action_dir)
 
@@ -71,7 +78,7 @@ class CustomModel(BaseFeaturesExtractor):
         veh_encoder = veh_encoder.mean(dim=1)
 
         all_feature_output = self.output(torch.cat([ac_feat, veh_feat, bound_feat, veh_encoder, action_feat], dim=1))
-        # all_feature_output = self.output(torch.cat([ac_feat, bound_feat, action_feat], dim=1))
+        # all_feature_output = self.output(torch.cat([ac_feat, traj_feat, bound_feat, action_feat], dim=1))
 
         # print('ac_feat', ac_feat.mean().item(),'veh_feat', veh_feat.mean().item(),'info_feat', info_feat.mean().item())
         return all_feature_output

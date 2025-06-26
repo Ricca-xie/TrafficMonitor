@@ -36,7 +36,7 @@ if __name__ == '__main__':
             "aircraft_type": "drone",
             "action_type": "horizontal_movement",
             "position": (1750, 1000, 50), "speed": 10, "heading": (1, 1, 0), "communication_range": 50,
-            "if_sumo_visualization": True, "img_file": path_convert('./asset/drone.png'),
+            "if_sumo_visualization": False, "img_file": path_convert('./asset/drone.png'),
             "custom_update_cover_radius":custom_update_cover_radius # 使用自定义覆盖范围的计算
         },
         # 'drone_2': {
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     import random
     while not done:
         action = {
-            "drone_1": (3, 0),
+            "drone_1": (1, 1),
             # "drone_1": (3, random.choice([0, 4]) ),
         }
         states, rewards, truncated, done, infos = ac_env_wrapper.step(action=action)

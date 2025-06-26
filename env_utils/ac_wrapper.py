@@ -54,7 +54,6 @@ class ACEnvWrapper(gym.Wrapper):
             6: (speed, 6),  # ↓ 正下
             7: (speed, 7),  # ↘ 右下
         }
-        self.end_point = [-540,-240]
         self.last_action = {}
 
     def get_relative_pos(self, aircraft_id, pos) -> List:
@@ -62,12 +61,20 @@ class ACEnvWrapper(gym.Wrapper):
         pos_new = [pos[0] - _init_points[0], pos[1] - _init_points[1], pos[2] - _init_points[2]]
         return pos_new
 
-    def get_mid_point(self, ac_id, veh_id) -> float:
-        mid_x = (self.latest_veh_pos[veh_id][0] + self.end_point[0]) / 2
-        mid_y = (self.latest_veh_pos[veh_id][1] + self.end_point[1]) / 2
-        dist = np.linalg.norm(np.array([mid_x,mid_y]) - np.array(self.latest_ac_pos[ac_id][:2]))
-        return dist
+    def get_veh_dist(self, ac_id, f_veh_id, l_veh_id) -> float:
+        mid_x = (self.latest_veh_pos[f_veh_id][0] + self.latest_veh_pos[l_veh_id][0]) / 2
+        mid_y = (self.latest_veh_pos[f_veh_id][1] + self.latest_veh_pos[l_veh_id][1]) / 2
+        veh_dist = np.linalg.norm(np.array([mid_x,mid_y])  - np.array(self.latest_ac_pos[ac_id][:2]))
+        return veh_dist
 
+    def distance_penalty(self, dist, cover_radius, p=10):
+        ratio = dist/cover_radius
+        penalty = -np.log1p(ratio)/np.log1p(p)
+        return penalty
+
+    def prune_old_vehicles(self, current_veh_ids):
+        self.latest_veh_pos = {vid: pos for vid, pos in self.latest_veh_pos.items() if vid in current_veh_ids}
+        # self._veh_traj = {vid: traj for vid, traj in self._veh_traj.items() if vid in current_veh_ids}
 
     @property
     def action_space(self):
@@ -78,7 +85,8 @@ class ACEnvWrapper(gym.Wrapper):
 
         spaces = {
             "ac_attr": gym.spaces.Box(low=np.zeros((9,)), high=np.ones((9,)), shape=(9,)),
-            "relative_vecs": gym.spaces.Box(low=np.zeros((30,)), high=np.ones((30,)), shape=(30,)),
+            #"veh_traj": gym.spaces.Box(low=np.zeros((100,)), high=np.ones((100,)), shape=(100,)),
+            "relative_vecs": gym.spaces.Box(low=np.zeros((10,)), high=np.ones((10,)), shape=(10,)),
             "cover_counts": gym.spaces.Box(low=0, high=np.inf, shape=(1,)),
             "bound_dist": gym.spaces.Box(low=np.zeros((2,)), high=np.ones((2,)), shape=(2,)),
             "action_dir": gym.spaces.Box(low=np.zeros((8,)), high=np.ones((8,)), shape=(8,)),
@@ -96,6 +104,8 @@ class ACEnvWrapper(gym.Wrapper):
         new_state = dict()
         veh = state['vehicle']
         aircraft = state['aircraft']
+        self.prune_old_vehicles(set(veh.keys()))
+
         dist_to_bound = []
         relative_vecs = []
         cover_counts = []
@@ -125,7 +135,7 @@ class ACEnvWrapper(gym.Wrapper):
                 vehicle_pos = vehicle_info['position']
                 veh_pos = [vehicle_pos[0] - drone_init[0], vehicle_pos[1] - drone_init[1]]
                 self.latest_veh_pos[vehicle_id] = veh_pos
-                self._veh_traj[vehicle_id].append(veh_pos)
+                self._veh_traj[vehicle_id].append([veh_pos[0],veh_pos[1]])
                 # print('veh_pos',veh_pos)
 
                 dx = ac_pos[0] - veh_pos[0]
@@ -139,18 +149,29 @@ class ACEnvWrapper(gym.Wrapper):
                     # veh_in_range = 1 - dist / cover_radius
                     # vehicle_state[vehicle_id]['veh_in_range'] = veh_in_range
                     # veh_feature.append([veh_in_range])
-                relative_vecs.append([dx, dy])
+                relative_vecs.append([veh_pos[0], veh_pos[1]])
 
             cover_counts.append(len(vehicle_state))
             new_state[aircraft_id] = vehicle_state
 
         if len(relative_vecs) == 0:
-            relative_vecs = np.zeros((15,2))
+            relative_vecs = np.zeros((5,2))
         else:
-            relative_vecs = np.array(relative_vecs[:15])
-            if relative_vecs.shape[0] < 15:
-                pad = np.zeros((15 - relative_vecs.shape[0], 2))
+            relative_vecs = np.array(relative_vecs[:5])
+            if relative_vecs.shape[0] < 5:
+                pad = np.zeros((5 - relative_vecs.shape[0], 2))
                 relative_vecs = np.vstack((relative_vecs, pad))
+
+        # veh_traj_array = np.zeros((5,10,2))
+        # for idx, veh_id in enumerate((list(self._veh_traj.keys())[-5:])):
+        #     traj_list = list(self._veh_traj.get(veh_id,[]))
+        #     traj_array = np.zeros((10, 2))
+        #     if len(traj_list) < 10:
+        #         pad = np.zeros((10 - len(traj_list),2))
+        #         traj_array = np.vstack((pad, traj_list))
+        #     else:
+        #         traj_array = np.array(traj_list[-10:])
+        #     veh_traj_array[idx] = traj_array
 
         if len(dist_to_bound) == 0:
             dist_to_bound = np.zeros((2,))
@@ -164,6 +185,7 @@ class ACEnvWrapper(gym.Wrapper):
 
         feature_set = {
             "ac_attr": np.array(self._pos_set).reshape(-1),
+            # "veh_traj": np.array(veh_traj_array).reshape(-1),
             "relative_vecs": np.array(relative_vecs).reshape(-1),
             "cover_counts": np.array([cover_counts[0]]).reshape(-1),
             "bound_dist": dist_to_bound.reshape(1,-1).squeeze(),
@@ -189,19 +211,28 @@ class ACEnvWrapper(gym.Wrapper):
 
             proximity_bonus = 0
             midpoint_bonus = 0
-            d_max = 300
             veh_keys = list(self.latest_veh_pos.keys())
             if len(veh_keys) > 2:
                 first_veh_id = veh_keys[0]
                 last_veh_id = veh_keys[-1]
-                f_dist = self.get_mid_point(aircraft_id, first_veh_id)
-                if f_dist < d_max:
-                    midpoint_bonus += 1 - f_dist / d_max
-                l_dist = self.get_mid_point(aircraft_id, last_veh_id)
-                if l_dist < d_max:
-                    midpoint_bonus += 1 - l_dist / d_max
+                m_dist = self.get_veh_dist(aircraft_id, first_veh_id, last_veh_id)
+                if m_dist > cover_radius:
+                    penality = self.distance_penalty((m_dist-cover_radius), cover_radius, p=20)
+                    reward += penality
+                # print("live veh id", list(states["tracked_ID"].keys()))
+                # print("tracked_ID", list(self.latest_veh_pos.keys()))
+                # if m_dist <= d_max:
+                #     midpoint_bonus += (1 - cover_radius/m_dist)
+                # else:
+                #     midpoint_bonus -= (m_dist/cover_radius) * 0.5
+
             else:
                 pass
+
+            # mid_x = (self.latest_veh_pos[veh_id][0] + self.end_point[0]) / 2
+            # mid_y = (self.latest_veh_pos[veh_id][1] + self.end_point[1]) / 2
+            # dist = np.linalg.norm(np.array([mid_x, mid_y]) - np.array(self.latest_ac_pos[ac_id][:2]))
+
             # for vehicle_id, vehicle_pos in self.latest_veh_pos.items():
             #     dist = self.get_mid_point(aircraft_id, vehicle_id)
             #     if dist < d_max:
@@ -241,30 +272,31 @@ class ACEnvWrapper(gym.Wrapper):
                 #     if veh_dist < d_max:
                 #         proximity_bonus = 1-veh_dist/d_max
 
-            reward += midpoint_bonus
+            # reward += midpoint_bonus
 
             bound_penalty = 0
             if abs(_x) <= self.x_range and abs(_y) <= self.y_range:
-                reward += 0.01
+                reward += 0.3
             else:
+                if abs(_y) > (self.y_range - 100):
+                    bound_penalty = -5 # -= abs(_y) - self.y_range
+                    reward += bound_penalty
+                if abs(_x) > (self.x_range - 100):
+                    bound_penalty = -5  # -= abs(_x) - self.x_range
+                    reward += bound_penalty
 
                 if abs(_x) > self.x_range:
                     dones = True
-                    bound_penalty = -50
+                    bound_penalty = -100
                     reward += bound_penalty
                     return reward, dones
-                elif abs(_x) > self.x_range - 30:
-                    bound_penalty = -10 # -= abs(_x) - self.x_range
-                    reward += bound_penalty
 
-                if abs(_y) > self.x_range:
+                if abs(_y) > self.y_range:
                     dones = True
-                    bound_penalty = -50
+                    bound_penalty = -100
                     reward += bound_penalty
                     return reward, dones
-                elif abs(_y) > self.y_range -30:
-                    bound_penalty = -10 # -= abs(_y) - self.y_range
-                    reward += bound_penalty
+
 
             # else: bound_penalty += 0.1
             # if _y < 0 or _y > self.y_max:
@@ -288,8 +320,8 @@ class ACEnvWrapper(gym.Wrapper):
         self.y_max = 1000 # self.side_length
         # calculate the max-height (to limit the height)
         #self.h_max = (self.side_length / 10) * math.tan(math.radians(75 / 2))
-        self.x_range = 600
-        self.y_range = 400
+        self.x_range = 800
+        self.y_range = 600
 
         state, _ = self.state_wrapper(state=state)
         return state, {'step_time':0}

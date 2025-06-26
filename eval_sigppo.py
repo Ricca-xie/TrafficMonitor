@@ -40,7 +40,7 @@ if __name__ == '__main__':
     parser.add_argument('--num_envs', type=int, default=1, help='The number of environments')
     parser.add_argument('--policy_model', type=str, default="baseline", help='policy network: baseline_models or fusion_models_0')
     parser.add_argument('--features_dim', type=int, default=512, help='The dimension of output features 64')
-    parser.add_argument('--num_seconds', type=int, default=300, help='exploration steps')
+    parser.add_argument('--num_seconds', type=int, default=650, help='exploration steps')
     parser.add_argument('--n_steps', type=int, default=512, help='The number of steps in each environment') #500
     parser.add_argument('--lr', type=float, default=5e-4, help='The learning rate of PPO') #5e-5
     parser.add_argument('--batch_size', type=int, default=32, help='The batch size of PPO') # 350
@@ -64,7 +64,7 @@ if __name__ == '__main__':
         'drone_1': {
             "aircraft_type": "drone",
             "action_type": "horizontal_movement", # combined_movement
-            "position": (1750, 1000, 50), "speed": 15, "heading": (1, 1, 0), "communication_range": 50,
+            "position": (1750, 1000, 50), "speed": 10, "heading": (1, 1, 0), "communication_range": 50,
             "if_sumo_visualization": True, "img_file": path_convert('./asset/drone.png'),
             "custom_update_cover_radius": custom_update_cover_radius  # 使用自定义覆盖范围的计算
         },

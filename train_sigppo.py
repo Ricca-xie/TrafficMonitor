@@ -50,10 +50,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Parameters.')
     parser.add_argument('--env_name', type=str, default="LONG_GANG", help='The name of environment')
     parser.add_argument('--speed', type=int, default=160, help="100,160,320") # speed决定了地图的scale
-    parser.add_argument('--num_envs', type=int, default=1, help='The number of environments')
+    parser.add_argument('--num_envs', type=int, default=10, help='The number of environments')
     parser.add_argument('--policy_model', type=str, default="baseline", help='policy network: baseline_models or fusion_models_0')
     parser.add_argument('--features_dim', type=int, default=512, help='The dimension of output features 64')
-    parser.add_argument('--num_seconds', type=int, default=300, help='exploration steps')
+    parser.add_argument('--num_seconds', type=int, default=650, help='exploration steps')
     parser.add_argument('--n_steps', type=int, default=512, help='The number of steps in each environment') #500
     parser.add_argument('--lr', type=float, default=5e-4, help='The learning rate of PPO') #5e-5
     parser.add_argument('--batch_size', type=int, default=32, help='The batch size of PPO') # 350
