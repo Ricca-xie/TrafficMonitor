@@ -2,7 +2,8 @@
 @Author: Ricca
 @Date: 2024-07-16
 @Description: Custom Model
-@LastEditTime:
+@LastEditTime: 2025-07-15
+@LastEditors: Jiachen
 '''
 import gym
 import torch.nn as nn
@@ -15,21 +16,15 @@ class CustomModel(BaseFeaturesExtractor):
         """
         super().__init__(observation_space, features_dim)
         ac_attr_dim = observation_space["ac_attr"].shape[0]
-        # veh_traj_dim = observation_space["veh_traj"].shape[0]
         veh_pos_dim = observation_space["relative_vecs"].shape[0]
         bound_dim = observation_space["bound_dist"].shape[0]
-        # veh_info_dim = observation_space["cover_counts"].shape[0]
-        action_dim = observation_space["action_dir"].shape[0]
+        break_spot_dim = observation_space["break_spot"].shape[0]
 
         self.hidden_dim = 32
         self.linear_encoder_ac = nn.Sequential(
             nn.Linear(ac_attr_dim, self.hidden_dim),
             nn.ReLU(),
         )
-        # self.linear_encoder_veh_traj = nn.Sequential(
-        #     nn.Linear(veh_traj_dim, self.hidden_dim),
-        #     nn.ReLU(),
-        # )
         self.linear_encoder_veh_pos = nn.Sequential(
             nn.Linear(veh_pos_dim, self.hidden_dim),
             nn.ReLU(),
@@ -42,13 +37,17 @@ class CustomModel(BaseFeaturesExtractor):
             nn.Linear(1, self.hidden_dim),
             nn.ReLU(),
         )
-        self.linear_encoder_action = nn.Sequential(
-            nn.Linear(action_dim, self.hidden_dim),
+        self.linear_encoder_spot_info = nn.Sequential(
+            nn.Linear(break_spot_dim, self.hidden_dim),
+            nn.ReLU(),
+        )
+        self.linear_encoder_has_veh = nn.Sequential(
+            nn.Linear(1, self.hidden_dim),
             nn.ReLU(),
         )
 
         self.output = nn.Sequential(
-            nn.Linear(32+32+32+32+32, 256),
+            nn.Linear(32+32+32+32+32+32, 256),
             nn.ReLU(),
             nn.Linear(256, 128),
             nn.ReLU(),
@@ -57,28 +56,22 @@ class CustomModel(BaseFeaturesExtractor):
 
     def forward(self, observations):
         ac_attr = observations["ac_attr"]
-        # veh_traj = observations["veh_traj"]
         veh_pos = observations["relative_vecs"]
         veh_covered = observations["cover_counts"]
         bound = observations["bound_dist"]
-        action_dir = observations["action_dir"]
+        break_spot = observations["break_spot"]
+        has_veh = observations["no_vehicles"]
 
         # for k, v in observations.items():
         #     print(k,"shape",v.shape)
 
         ac_feat = self.linear_encoder_ac(ac_attr)
-        # traj_feat = self.linear_encoder_veh_traj(veh_traj)
         veh_feat = self.linear_encoder_veh_pos(veh_pos)
         bound_feat = self.linear_encoder_bound(bound)
-        action_feat = self.linear_encoder_action(action_dir)
+        covered_feat = self.linear_encoder_veh_info(veh_covered)
+        break_feat = self.linear_encoder_spot_info(break_spot)
+        vehicle_feat = self.linear_encoder_has_veh(has_veh)
 
-        batch_size = veh_covered.shape[0]
-        info_feat = veh_covered.view(batch_size, 1, 1)
-        veh_encoder = self.linear_encoder_veh_info(info_feat)
-        veh_encoder = veh_encoder.mean(dim=1)
-
-        all_feature_output = self.output(torch.cat([ac_feat, veh_feat, bound_feat, veh_encoder, action_feat], dim=1))
-        # all_feature_output = self.output(torch.cat([ac_feat, traj_feat, bound_feat, action_feat], dim=1))
-
-        # print('ac_feat', ac_feat.mean().item(),'veh_feat', veh_feat.mean().item(),'info_feat', info_feat.mean().item())
+        # action_feat,
+        all_feature_output = self.output(torch.cat([ac_feat, veh_feat, bound_feat, covered_feat, break_feat, vehicle_feat], dim=1))
         return all_feature_output

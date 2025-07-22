@@ -40,11 +40,10 @@ if __name__ == '__main__':
     parser.add_argument('--num_envs', type=int, default=1, help='The number of environments')
     parser.add_argument('--policy_model', type=str, default="baseline", help='policy network: baseline_models or fusion_models_0')
     parser.add_argument('--features_dim', type=int, default=512, help='The dimension of output features 64')
-    parser.add_argument('--num_seconds', type=int, default=650, help='exploration steps')
+    parser.add_argument('--num_seconds', type=int, default=700, help='exploration steps')
     parser.add_argument('--n_steps', type=int, default=512, help='The number of steps in each environment') #500
     parser.add_argument('--lr', type=float, default=5e-4, help='The learning rate of PPO') #5e-5
-    parser.add_argument('--batch_size', type=int, default=32, help='The batch size of PPO') # 350
-    # parser.add_argument('--ent_coef', type=float, default=0.05, help='entropy coefficient')
+    parser.add_argument('--batch_size', type=int, default=32, help='The batch size of PPO')
     parser.add_argument('--cuda_id', type=int, default=0, help='The id of cuda device')
     args = parser.parse_args()  # Parse the arguments
     device = f'cuda:{args.cuda_id}' if torch.cuda.is_available() else 'cpu'
@@ -55,8 +54,9 @@ if __name__ == '__main__':
     log_path = path_convert('./eval_log/')
     if not os.path.exists(log_path):
         os.makedirs(log_path)
-
+    # args.env_name = "Nguyen_Dupuis"
     sumo_cfg = path_convert(f"./sumo_envs/{args.env_name}/env/osm.sumocfg")
+    # sumo_cfg = path_convert(f"./sumo_envs/Nguyen_Dupuis/ND_env/rectangle.sumocfg")
     # net_file = path_convert(f"./sumo_envs/{args.env_name}/{args.env_name}.net.xml")
 
 
@@ -64,6 +64,7 @@ if __name__ == '__main__':
         'drone_1': {
             "aircraft_type": "drone",
             "action_type": "horizontal_movement", # combined_movement
+            # "position": (0, 0, 20), "speed": 10, "heading": (1, 1, 0), "communication_range": 10,
             "position": (1750, 1000, 50), "speed": 10, "heading": (1, 1, 0), "communication_range": 50,
             "if_sumo_visualization": True, "img_file": path_convert('./asset/drone.png'),
             "custom_update_cover_radius": custom_update_cover_radius  # 使用自定义覆盖范围的计算
@@ -74,14 +75,15 @@ if __name__ == '__main__':
         'num_seconds': args.num_seconds,
         'sumo_cfg': sumo_cfg,
         'use_gui': True,
-        # "net_file": net_file,
         'log_file': log_path,
         'aircraft_inits': aircraft_inits,
     }
     param_name = f'explore_{args.num_seconds}_n_steps_{args.n_steps}_lr_{str(args.lr)}_batch_size_{args.batch_size}'
 
     env = SubprocVecEnv([make_env(env_index=f'{i}', **params) for i in range(args.num_envs)])  # multiprocess
-    env = VecNormalize(env, norm_obs=False, norm_reward=True)
+    # env = VecNormalize(env, norm_obs=False, norm_reward=True)
+    env = VecNormalize(env, norm_obs=True, norm_obs_keys=[
+        "ac_attr","relative_vecs","cover_counts","break_spot","no_vehicles"], norm_reward=True)
 
     env.training = False  # 测试的时候不要更新
     env.norm_reward = False
@@ -104,34 +106,7 @@ if __name__ == '__main__':
         total_steps += 1
         print(rewards)
 
-    # x_min = env.get_attr("x_min")[0]
-    # y_min = env.get_attr("y_min")[0]
-
-    # noise grid
-    # grid_z = env.get_attr("grid_z")[0]
-    # 进行可视化
-    # render_map(
-    #     x_min=env.get_attr("x_min")[0],
-    #     y_min=env.get_attr("y_min")[0],
-    #     x_max=env.get_attr("x_max")[0],
-    #     y_max=env.get_attr("y_max")[0],
-    #     resolution=env.get_attr("resolution")[0],
-    #     grid_z=env.get_attr("noise_grid_z")[0][0], # env.get_attr("grid_z")[0], env.get_attr("noise_grid_z")[0],
-    #     trajectories=trajectory,
-    #     goal_points=env.get_attr("goal_seq")[0],
-    #     speed=aircraft_inits["drone_1"]["speed"],  # 60: 50*50, 100: 30*30 aircraft_inits["drone_1"]["speed"]
-    #     snir_threshold=args.snir_min, # args.snir_min
-    #     img_path=path_convert(f'./{args.env_name}_{args.passenger_type}_P{args.passenger_len}_S{args.snir_min}_{args.policy_model}_{param_name}_snir.png')
-    # )
-
     env.close()
-    # print(f'trajectory, {trajectory}.')
+
     print(f'累积奖励为, {total_reward}.')
     print(f"total steps:{total_steps}.")
-    # print(f"total distance:{total_steps * aircraft_inits['drone_1']['speed']}.")
-    # print(f"empty loaded rate:{ac_seat_flag_list.count(0) / len(ac_seat_flag_list)}")
-    # print(f"average waiting time:{wait_time}, {wait_time.mean()}")
-    # print(f"average fly time: {fly_time}, {fly_time.mean()}")
-    # print(f'average total time consumed:{(wait_time + fly_time).mean()}')
-
-

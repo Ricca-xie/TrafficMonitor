@@ -1,4 +1,3 @@
-# Re-import after code execution state reset
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
@@ -17,11 +16,13 @@ for v in vehicles:
 
 # Parameters for new vehicle generation
 start_time = 5
-batch_interval = 180
+batch_interval = 160
 vehicles_per_batch = 10
 vehicle_interval = 2
 even_lane_cycle = [0, 1, 2, 3, 0]
 odd_lane_cycle = [0, 1, 0, 1, 0]
+even_id = "1125684496"
+odd_id = "1131230259"
 even_route = "1125684496#0 1125684496#1"
 odd_route = "1131230259#0 239700065#3 239700065#4 1125678574"
 
@@ -29,30 +30,74 @@ odd_route = "1131230259#0 239700065#3 239700065#4 1125678574"
 current_time = start_time
 batch_index = 0
 
-while current_time < 2500:
+while current_time < 800:
+    # Generate even and odd lanes simultaneously for first batch
+    if batch_index == 0:
+        # Generate even lane vehicles (first group)
+        for i in range(vehicles_per_batch):
+            v_id = f"{even_id}#0__{batch_index}__ego.{i}"
+            depart_time = current_time + i * vehicle_interval
+            lane_id = str(even_lane_cycle[i % len(even_lane_cycle)])
 
-    if batch_index % 2 == 0:
-        selected_route = even_route
-        lane_cycle = even_lane_cycle
+            veh = ET.Element("vehicle", {
+                "id": v_id,
+                "type": "ego",
+                "depart": str(depart_time),
+                "departLane": lane_id
+            })
+            ET.SubElement(veh, "route", {"edges": even_route})
+            root.append(veh)
+
+        # Generate odd lane vehicles (second group)
+        for i in range(vehicles_per_batch):
+            v_id = f"{odd_id}#0__{batch_index}__ego.{i}"
+            depart_time = current_time + i * vehicle_interval
+            lane_id = str(odd_lane_cycle[i % len(odd_lane_cycle)])
+
+            veh = ET.Element("vehicle", {
+                "id": v_id,
+                "type": "ego",
+                "depart": str(depart_time),
+                "departLane": lane_id
+            })
+            ET.SubElement(veh, "route", {"edges": odd_route})
+            root.append(veh)
+
+    # Generate third group (odd lane only) 10 seconds after first batch ends
+    elif batch_index == 1:
+        third_group_start = current_time + 10  # 10 seconds after first batch
+
+        for i in range(vehicles_per_batch):
+            v_id = f"{odd_id}#0__{batch_index}__ego.{i}"
+            depart_time = third_group_start + i * vehicle_interval
+            lane_id = str(odd_lane_cycle[i % len(odd_lane_cycle)])
+
+            veh = ET.Element("vehicle", {
+                "id": v_id,
+                "type": "ego",
+                "depart": str(depart_time),
+                "departLane": lane_id
+            })
+            ET.SubElement(veh, "route", {"edges": odd_route})
+            root.append(veh)
+
+    # Subsequent batches follow normal interval
     else:
-        selected_route =odd_route
-        lane_cycle = odd_lane_cycle
+        # Generate odd lane vehicles
+        for i in range(vehicles_per_batch):
+            v_id = f"{odd_id}#0__{batch_index}__ego.{i}"
+            depart_time = current_time + i * vehicle_interval
+            lane_id = str(odd_lane_cycle[i % len(odd_lane_cycle)])
 
-    for i in range(vehicles_per_batch):
-        v_id = f"1125684496#0__{batch_index}__ego.{i}"
-        depart_time = current_time + i * vehicle_interval
-        lane_id = str(lane_cycle[i % len(lane_cycle)])
+            veh = ET.Element("vehicle", {
+                "id": v_id,
+                "type": "ego",
+                "depart": str(depart_time),
+                "departLane": lane_id
+            })
+            ET.SubElement(veh, "route", {"edges": odd_route})
+            root.append(veh)
 
-        veh = ET.Element("vehicle", {
-            "id": v_id,
-            "type": "ego",
-            "depart": str(depart_time),
-            "departLane": lane_id
-        })
-        ET.SubElement(veh, "route", {
-            "edges": selected_route
-        })
-        root.append(veh)
     current_time += batch_interval
     batch_index += 1
 

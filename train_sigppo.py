@@ -51,13 +51,12 @@ if __name__ == '__main__':
     parser.add_argument('--env_name', type=str, default="LONG_GANG", help='The name of environment')
     parser.add_argument('--speed', type=int, default=160, help="100,160,320") # speed决定了地图的scale
     parser.add_argument('--num_envs', type=int, default=10, help='The number of environments')
-    parser.add_argument('--policy_model', type=str, default="baseline", help='policy network: baseline_models or fusion_models_0')
+    parser.add_argument('--policy_model', type=str, default="fusion", help='policy network: baseline_models or fusion_models_0')
     parser.add_argument('--features_dim', type=int, default=512, help='The dimension of output features 64')
-    parser.add_argument('--num_seconds', type=int, default=650, help='exploration steps')
+    parser.add_argument('--num_seconds', type=int, default=700, help='exploration steps')
     parser.add_argument('--n_steps', type=int, default=512, help='The number of steps in each environment') #500
     parser.add_argument('--lr', type=float, default=5e-4, help='The learning rate of PPO') #5e-5
-    parser.add_argument('--batch_size', type=int, default=32, help='The batch size of PPO') # 350
-    # parser.add_argument('--ent_coef', type=float, default=0.05, help='entropy coefficient')
+    parser.add_argument('--batch_size', type=int, default=32, help='The batch size of PPO')
     parser.add_argument('--cuda_id', type=int, default=0, help='The id of cuda device')
     args = parser.parse_args()  # Parse the arguments
     device = f'cuda:{args.cuda_id}' if torch.cuda.is_available() else 'cpu'
@@ -108,8 +107,9 @@ if __name__ == '__main__':
     }
     env = SubprocVecEnv([make_env(env_index=f'{i}', **params) for i in range(args.num_envs)]) # multiprocess
     # env = VecNormalize(env, norm_obs=False, norm_reward=True)
-    # env = VecNormalize(env, norm_obs=True, norm_obs_keys=["ac_attr","passen_attr","passen_mask","snir_attr","uncertainty_attr"], norm_reward=True)
-    env = VecNormalize(env, norm_obs=False, norm_reward=True)
+    env = VecNormalize(env, norm_obs=True, norm_obs_keys=[
+        "ac_attr","relative_vecs","cover_counts","break_spot","no_vehicles"], norm_reward=True)
+    # env = VecNormalize(env, norm_obs=False, norm_reward=True)
 
     # #########
     # Callback
@@ -140,9 +140,16 @@ if __name__ == '__main__':
         from train_utils.baseline_models import CustomModel
         policy_models = CustomModel
     elif args.policy_model.split("_")[0] == "fusion":
-        model_version = args.policy_model.split("_")[-1]
+        # model_version = args.policy_model.split("_")[-1]
         # if model_version == "0":
         #     from train_utils.fusion_models_v0 import FusionModel # ac_wrapper 最原版的reward
+
+        # if model_version == "0":
+        # from train_utils.new_model import EnhancedTrafficFeatureExtractor
+        # policy_models = EnhancedTrafficFeatureExtractor
+
+        from train_utils.traffic_transformer import CustomModelWithTrans
+        policy_models = CustomModelWithTrans
 
 
         # policy_models = FusionModel
@@ -158,14 +165,13 @@ if __name__ == '__main__':
                 env,
                 batch_size=args.batch_size, #256
                 n_steps=args.n_steps,
-                n_epochs=5, # 每次间隔 n_epoch 去评估一次
-                learning_rate= linear_schedule(args.lr), #linear_schedule(args.lr), # args.lr # cosine_annealing_schedule(args.lr, final_lr=1e-5, total_timesteps=5e5)
+                n_epochs=5, # 每次间隔 n_epoch 去评估一次                learning_rate= linear_schedule(args.lr), #linear_schedule(args.lr), # args.lr # cosine_annealing_schedule(args.lr, final_lr=1e-5, total_timesteps=5e5)
                 verbose=True, 
                 policy_kwargs=policy_kwargs, 
                 tensorboard_log=tensorboard_path, 
                 device=device
             )
-    model.learn(total_timesteps=3e5, tb_log_name='UAM', callback=callback_list) #3e5 1e6
+    model.learn(total_timesteps=1e6, tb_log_name='UAM', callback=callback_list) #3e5 1e6
 
     # #################
     # 保存 model 和 env

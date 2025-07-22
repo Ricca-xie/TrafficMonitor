@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-06-26 16:35:59 by Eclipse SUMO GUI Version 1.23.1
-<sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+<!-- generated on 2025-07-22 15:32:45 by Eclipse SUMO libsumo Version 1.23.1
+<libsumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/libsumoConfiguration.xsd">
 
     <input>
         <net-file value="C:\TrafficMonitor\TrafficMonitor\./sumo_envs/LONG_GANG/env/osm.net.xml"/>
@@ -24,22 +24,12 @@
         <no-step-log value="true"/>
     </report>
 
-    <traci_server>
-        <remote-port value="58914"/>
-    </traci_server>
-
     <random_number>
         <random value="true"/>
     </random_number>
 
     <gui_only>
         <gui-settings-file value="C:\TrafficMonitor\TrafficMonitor\./sumo_envs/LONG_GANG/env/viewsettings.xml"/>
-        <quit-on-end value="true"/>
-        <start value="true"/>
     </gui_only>
 
-</sumoConfiguration>
--->
-
-<detector xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/det_e2_file.xsd">
-</detector>
+</libsumoConfiguration>

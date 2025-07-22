@@ -1,219 +1,80 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!-- generated on 2025-06-18 14:24:40 by Eclipse SUMO jtrrouter Version 1.23.1
-<jtrrouterConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/jtrrouterConfiguration.xsd">
-
-    <input>
-        <net-file value="C:\TrafficMonitor\TrafficMonitor\sumo_envs\LONG_GANG\./env/osm.net.xml"/>
-        <route-files value="C:\TrafficMonitor\TrafficMonitor\sumo_envs\LONG_GANG\./testflow.trip.xml"/>
-        <turn-ratio-files value="C:\TrafficMonitor\TrafficMonitor\sumo_envs\LONG_GANG\./testflow.turndefs.xml"/>
-    </input>
-
-    <output>
-        <output-file value="C:\TrafficMonitor\TrafficMonitor\sumo_envs\LONG_GANG\./osm.rou.xml"/>
-    </output>
-
-    <processing>
-        <randomize-flows value="True"/>
-        <accept-all-destinations value="True"/>
-    </processing>
-
-    <defaults>
-        <departlane value="random"/>
-    </defaults>
-
-    <report>
-        <no-warnings value="true"/>
-    </report>
-
-    <random_number>
-        <seed value="777"/>
-    </random_number>
-
-</jtrrouterConfiguration>
--->
-
+<?xml version="1.0" ?>
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
-    <vType id="ego" length="5.00" color="26,188,156" tau="1.0"/>
-    <vehicle id="1125684496#0__0__ego.0" type="ego" depart="15.93" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vType id="background" length="5.00" color="155,89,182" tau="1.0"/>
-    <vehicle id="1125684496#0__0__background.0" type="background" depart="26.70" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__0__background.1" type="background" depart="36.79" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__0__background.2" type="background" depart="40.54" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__0__ego.1" type="ego" depart="47.92" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__0__background.3" type="background" depart="52.13" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__1__background.0" type="background" depart="63.58" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__1__ego.0" type="ego" depart="70.88" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__1__background.1" type="background" depart="77.37" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__1__background.2" type="background" depart="88.79" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__1__background.3" type="background" depart="104.46" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__1__ego.1" type="ego" depart="114.94" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__2__background.0" type="background" depart="126.54" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__2__background.1" type="background" depart="126.80" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__2__ego.0" type="ego" depart="131.03" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__2__background.2" type="background" depart="132.32" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__2__ego.1" type="ego" depart="145.90" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__2__background.3" type="background" depart="160.85" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__3__background.0" type="background" depart="187.71" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__3__background.1" type="background" depart="190.82" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__3__background.2" type="background" depart="199.28" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__3__ego.0" type="ego" depart="200.32" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__3__ego.1" type="ego" depart="206.95" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__3__background.3" type="background" depart="221.30" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__4__background.0" type="background" depart="254.36" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__4__background.1" type="background" depart="270.51" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__4__ego.0" type="ego" depart="275.91" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__4__background.2" type="background" depart="285.09" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__4__ego.1" type="ego" depart="288.23" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__4__background.3" type="background" depart="297.22" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__15__ego.0" type="ego" depart="908.46" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__15__background.0" type="background" depart="908.82" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__15__ego.1" type="ego" depart="931.94" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__15__background.1" type="background" depart="940.90" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__15__background.2" type="background" depart="945.73" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__15__background.3" type="background" depart="951.75" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__16__background.0" type="background" depart="978.82" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__16__ego.0" type="ego" depart="981.15" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__16__background.1" type="background" depart="981.25" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__16__ego.1" type="ego" depart="1004.49" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__16__background.2" type="background" depart="1008.93" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__16__background.3" type="background" depart="1014.15" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__17__ego.0" type="ego" depart="1028.79" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__17__background.0" type="background" depart="1035.95" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__17__background.1" type="background" depart="1042.06" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__17__ego.1" type="ego" depart="1054.60" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__17__background.2" type="background" depart="1061.40" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__17__background.3" type="background" depart="1079.25" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__18__background.0" type="background" depart="1100.24" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__18__ego.0" type="ego" depart="1108.08" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__18__ego.1" type="ego" depart="1117.22" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__18__background.1" type="background" depart="1119.97" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__18__background.2" type="background" depart="1126.09" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__18__background.3" type="background" depart="1130.50" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__19__background.0" type="background" depart="1150.58" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__19__background.1" type="background" depart="1167.01" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__19__background.2" type="background" depart="1168.11" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__19__ego.0" type="ego" depart="1170.61" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__19__background.3" type="background" depart="1173.57" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
-    <vehicle id="1125684496#0__19__ego.1" type="ego" depart="1182.09" departLane="random">
-        <route edges="1125684496#0 1125684496#1" />
-    </vehicle>
+
+  <vType id="ego" length="5.00" color="26,188,156" tau="1.0" maxSpeed="5"/>
+
+  <!-- 第一车道：1125684496#0 1125684496#1 (6辆车) -->
+  <vehicle id="1131230259#0__0__ego.0" type="ego" depart="4" departLane="0">
+    <route edges="1131230259#0 239700065#3 239700065#4 1125678574"/>
+  </vehicle>
+  <vehicle id="1125684496#0__0__ego.0" type="ego" depart="5" departLane="0">
+    <route edges="E3 1125793701#2 1125793701#3"/>
+  </vehicle>
+  <vehicle id="1131230259#0__0__ego.1" type="ego" depart="6" departLane="1">
+    <route edges="1131230259#0 239700065#3 239700065#4 1125678574"/>
+  </vehicle>
+  <vehicle id="1125684496#0__0__ego.1" type="ego" depart="7" departLane="1">
+    <route edges="E3 1125793701#2 1125793701#3"/>
+  </vehicle>
+  <vehicle id="1131230259#0__0__ego.2" type="ego" depart="8" departLane="0">
+    <route edges="1131230259#0 239700065#3 239700065#4 1125678574"/>
+  </vehicle>
+  <vehicle id="1125684496#0__0__ego.2" type="ego" depart="9" departLane="0">
+    <route edges="E3 1125793701#2 1125793701#3"/>
+  </vehicle>
+  <vehicle id="1131230259#0__0__ego.3" type="ego" depart="10" departLane="1">
+    <route edges="1131230259#0 239700065#3 239700065#4 1125678574"/>
+  </vehicle>
+  <vehicle id="1125684496#0__0__ego.3" type="ego" depart="11" departLane="1">
+    <route edges="E3 1125793701#2 1125793701#3"/>
+  </vehicle>
+  <vehicle id="1125684496#0__0__ego.4" type="ego" depart="13" departLane="0">
+    <route edges="E3 1125793701#2 1125793701#3"/>
+  </vehicle>
+  <vehicle id="1125684496#0__0__ego.5" type="ego" depart="15" departLane="1">
+    <route edges="E3 1125793701#2 1125793701#3"/>
+  </vehicle>
+
+  <!-- 第二车道：1131230259#0 239700065#3 239700065#4 1125678574 (第二批3辆车) -->
+  <vehicle id="1131230259#0__1__ego.0" type="ego" depart="175" departLane="0">
+    <route edges="E3 1125793701#2 1125793701#3"/>
+  </vehicle>
+  <vehicle id="1131230259#0__1__ego.1" type="ego" depart="177" departLane="1">
+    <route edges="E3 1125793701#2 1125793701#3"/>
+  </vehicle>
+  <vehicle id="1131230259#0__1__ego.2" type="ego" depart="179" departLane="0">
+    <route edges="E3 1125793701#2 1125793701#3"/>
+  </vehicle>
+
+  <!-- 第三车道：E3, 1125793701#2, 1125793701#3 (10辆车) -->
+  <vehicle id="E3_route__0__ego.0" type="ego" depart="189" departLane="0">
+    <route edges="1131230259#0 239700065#3 239700065#4 1125678574"/>
+  </vehicle>
+  <vehicle id="E3_route__0__ego.1" type="ego" depart="191" departLane="1">
+    <route edges="1131230259#0 239700065#3 239700065#4 1125678574"/>
+  </vehicle>
+  <vehicle id="E3_route__0__ego.2" type="ego" depart="193" departLane="0">
+    <route edges="1131230259#0 239700065#3 239700065#4 1125678574"/>
+  </vehicle>
+  <vehicle id="E3_route__0__ego.3" type="ego" depart="195" departLane="1">
+    <route edges="1131230259#0 239700065#3 239700065#4 1125678574"/>
+  </vehicle>
+  <vehicle id="E3_route__0__ego.4" type="ego" depart="197" departLane="0">
+    <route edges="1131230259#0 239700065#3 239700065#4 1125678574"/>
+  </vehicle>
+  <vehicle id="E3_route__0__ego.5" type="ego" depart="199" departLane="0">
+    <route edges="1131230259#0 239700065#3 239700065#4 1125678574"/>
+  </vehicle>
+  <vehicle id="E3_route__0__ego.6" type="ego" depart="201" departLane="1">
+    <route edges="1131230259#0 239700065#3 239700065#4 1125678574"/>
+  </vehicle>
+  <vehicle id="E3_route__0__ego.7" type="ego" depart="203" departLane="0">
+    <route edges="1131230259#0 239700065#3 239700065#4 1125678574"/>
+  </vehicle>
+  <vehicle id="E3_route__0__ego.8" type="ego" depart="205" departLane="1">
+    <route edges="1125684496#0 1125684496#1"/>
+  </vehicle>
+  <vehicle id="E3_route__0__ego.9" type="ego" depart="207" departLane="0">
+    <route edges="1125684496#0 1125684496#1"/>
+  </vehicle>
 </routes>
