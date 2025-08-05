@@ -50,7 +50,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Parameters.')
     parser.add_argument('--env_name', type=str, default="LONG_GANG", help='The name of environment')
     parser.add_argument('--speed', type=int, default=160, help="100,160,320") # speed决定了地图的scale
-    parser.add_argument('--num_envs', type=int, default=10, help='The number of environments')
+    parser.add_argument('--num_envs', type=int, default=20, help='The number of environments')
     parser.add_argument('--policy_model', type=str, default="fusion", help='policy network: baseline_models or fusion_models_0')
     parser.add_argument('--features_dim', type=int, default=512, help='The dimension of output features 64')
     parser.add_argument('--num_seconds', type=int, default=700, help='exploration steps')
@@ -108,7 +108,8 @@ if __name__ == '__main__':
     env = SubprocVecEnv([make_env(env_index=f'{i}', **params) for i in range(args.num_envs)]) # multiprocess
     # env = VecNormalize(env, norm_obs=False, norm_reward=True)
     env = VecNormalize(env, norm_obs=True, norm_obs_keys=[
-        "ac_attr","relative_vecs","cover_counts","break_spot","no_vehicles"], norm_reward=True)
+        "ac_attr","relative_vecs", "cover_counts", "break_spot", "no_vehicles"], norm_reward=True)
+        #"ac_attr", "relative_vecs", "break_spot"], norm_reward = True)
     # env = VecNormalize(env, norm_obs=False, norm_reward=True)
 
     # #########
@@ -148,7 +149,7 @@ if __name__ == '__main__':
         # from train_utils.new_model import EnhancedTrafficFeatureExtractor
         # policy_models = EnhancedTrafficFeatureExtractor
 
-        from train_utils.traffic_transformer import CustomModelWithTrans
+        from train_utils.model import CustomModelWithTrans
         policy_models = CustomModelWithTrans
 
 
@@ -165,7 +166,8 @@ if __name__ == '__main__':
                 env,
                 batch_size=args.batch_size, #256
                 n_steps=args.n_steps,
-                n_epochs=5, # 每次间隔 n_epoch 去评估一次                learning_rate= linear_schedule(args.lr), #linear_schedule(args.lr), # args.lr # cosine_annealing_schedule(args.lr, final_lr=1e-5, total_timesteps=5e5)
+                n_epochs=5, # 每次间隔 n_epoch 去评估一次
+                learning_rate= linear_schedule(args.lr), #linear_schedule(args.lr), # args.lr # cosine_annealing_schedule(args.lr, final_lr=1e-5, total_timesteps=5e5)
                 verbose=True, 
                 policy_kwargs=policy_kwargs, 
                 tensorboard_log=tensorboard_path, 

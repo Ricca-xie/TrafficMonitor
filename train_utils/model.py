@@ -7,51 +7,73 @@ from train_utils.traffic_transformer import TransformerExtractor
 class CustomModelWithTrans(BaseFeaturesExtractor):
     def __init__(self, observation_space: gym.Space, features_dim: int ):
         super().__init__(observation_space, features_dim)
+
+        ac_shape = observation_space["ac_attr"].shape[0]
+        rv_shape = observation_space["relative_vecs"].shape
+        # bd_shape = observation_space["bound_dist"].shape[0]
+        cc_shape = observation_space["cover_counts"].shape[0]
+        bs_shape = observation_space["break_spot"].shape[0]
+        nv_shape = observation_space["no_vehicles"].shape[0]
+
         self.hidden_dim = 32
-        # (1) 历史轨迹编码
+
         self.attr_net = nn.Sequential(
-            nn.Linear(observation_space['ac_attr'], 64), nn.ReLU(),
-            nn.Linear(64, 64), nn.ReLU()
+            nn.Linear(ac_shape, 64),
+            nn.ReLU(),
+            nn.Linear(64, self.hidden_dim),
+            nn.ReLU()
         )
-        # (2) Transformer 提取相对位置特征
+        self.brk_net = nn.Sequential(
+            nn.Linear(bs_shape, 64),
+            nn.ReLU(),
+            nn.Linear(64, self.hidden_dim),
+            nn.ReLU()
+        )
+        # self.bnd_net = nn.Sequential(
+        #     nn.Linear(bd_shape, 64),
+        #     nn.ReLU(),
+        #     nn.Linear(64, self.hidden_dim),
+        #     nn.ReLU(),
+        # )
+        self.cc_net = nn.Sequential(
+            nn.Linear(cc_shape, 64),
+            nn.ReLU(),
+            nn.Linear(64, self.hidden_dim),
+            nn.ReLU(),
+        )
+        self.hv_net = nn.Sequential(
+            nn.Linear(nv_shape, 64),
+            nn.ReLU(),
+            nn.Linear(64, self.hidden_dim),
+            nn.ReLU(),
+        )
+
         self.trans_extractor = TransformerExtractor(
-            input_dim=2, d_model=64, nhead=4, num_layers=2, seq_len=20
-        )
-        # (3) 标量特征编码
-        self.scalar_net = nn.Sequential(
-            nn.Linear(4, 32), nn.ReLU(),
-            nn.Linear(32, 32), nn.ReLU()
+            input_dim=rv_shape[1], d_model=self.hidden_dim, dim_feedforward=128, nhead=4, num_layers=2, seq_len=rv_shape[0]
         )
 
-        fused_dim = 64 + 64 + 32
-
-        self.policy_net = nn.Sequential(
-            nn.Linear(fused_dim, 128), nn.ReLU(),
-            nn.Linear(128, self.hidden_dim)
-        )
-        self.value_net  = nn.Sequential(
-            nn.Linear(fused_dim, 128), nn.ReLU(),
-            nn.Linear(128, 1)
+        self.output = nn.Sequential(
+            nn.Linear(32 + 32 + 32 + 32 +32, features_dim),
+            nn.ReLU(),
         )
 
     def forward(self, obs):
-        # 解包
-        ac_attr = obs['ac_attr']        # [B, ac_dim]
-        rel_vecs = obs['relative_vecs']  # [B, 20, 2]
-        scalars = torch.stack([
-                  obs['cover_counts'],
-                  obs['bound_dist'],
-                  obs['break_spot'],
-                  obs['no_vehicles'].float()
-                ], dim=-1)        # [B,4]
+        ac_attr = obs['ac_attr']
+        rel_vecs = obs['relative_vecs']
+        brk_spot = obs['break_spot']
+        # bnd_dist = obs['bound_dist']
+        cov_cnt = obs['cover_counts']
+        no_veh = obs['no_vehicles']
+        # for k, v in obs.items():
+        #     print(k,"shape",v.shape)
 
-        # 三路并行
-        z_attr = self.attr_net(ac_attr)            # [B,64]
-        z_rel  = self.trans_extractor(rel_vecs)    # [B,64]
-        z_sca  = self.scalar_net(scalars)          # [B,32]
+        z_attr = self.attr_net(ac_attr)
+        z_brk = self.brk_net(brk_spot)
+        z_rel  = self.trans_extractor(rel_vecs)
 
-        # 融合 & 输出
-        fused = torch.cat([z_attr, z_rel, z_sca], dim=-1)
-        logits = self.policy_net(fused)
-        value  = self.value_net(fused).squeeze(-1)
-        return logits, value
+        # z_bnd = self.bnd_net(bnd_dist)
+        z_cc = self.cc_net(cov_cnt)
+        z_veh = self.hv_net(no_veh)
+        #all_feature_output = self.output(torch.cat([z_attr, z_brk, z_rel], dim=1))
+        all_feature_output = self.output(torch.cat([z_attr, z_brk, z_rel,z_cc, z_veh], dim=1))
+        return all_feature_output
