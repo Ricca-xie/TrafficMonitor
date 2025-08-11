@@ -9,7 +9,7 @@ class TransformerExtractor(nn.Module):
                  nhead: int = 4,
                  dim_feedforward: int = 128,
                  num_layers: int = 2,
-                 seq_len: int = 20):
+                 seq_len: int = 40):
         super().__init__()
         self.input_proj = nn.Linear(input_dim, d_model)
 
@@ -31,7 +31,7 @@ class TransformerExtractor(nn.Module):
         pe[:, 1::2] = torch.cos(position * div_term)
         return pe
 
-    def forward(self, relative_vecs): # (1,20,2)
+    def forward(self, relative_vecs): # (1,40,2)
         #print("relative_vecs", relative_vecs.min().item(), relative_vecs.max().item(), relative_vecs.mean().item(), relative_vecs.std().item())
         mask = (relative_vecs.abs().sum(dim=-1) == 0)
         x = self.input_proj(relative_vecs)

@@ -37,7 +37,7 @@ def make_env(
 
     ac_env = ACEnvironment(
         sumo_cfg=sumo_cfg,
-        num_seconds=330,
+        num_seconds=500,
         aircraft_inits=aircraft_inits,
         use_gui=True
     )
@@ -47,15 +47,15 @@ def make_env(
 
 
 if __name__ == '__main__':
-    sumo_cfg = path_convert("./sumo_envs/LONG_GANG/env/osm.sumocfg")
-    # sumo_cfg = path_convert("./sumo_envs/Nguyen_Dupuis/ND_env/resize_rectangle.sumocfg")
+    # sumo_cfg = path_convert("./sumo_envs/LONG_GANG/env/osm.sumocfg")
+    sumo_cfg = path_convert("./sumo_envs/Nguyen_Dupuis/ND_env/resize_rectangle.sumocfg")
 
     aircraft_inits = {
         'drone_1': {
             "aircraft_type": "drone",
             "action_type": "horizontal_movement",
-            # "position": (0, 0, 20), "speed": 10, "heading": (1, 1, 0), "communication_range": 10,
-            "position": (1750, 1000, 50), "speed": 10, "heading": (1, 1, 0), "communication_range": 50,
+            "position": (0, 0, 20), "speed": 10, "heading": (1, 1, 0), "communication_range": 10,
+            # "position": (1750, 1000, 50), "speed": 10, "heading": (1, 1, 0), "communication_range": 50,
             "if_sumo_visualization": True, "img_file": path_convert('./asset/drone.png'),
             "custom_update_cover_radius":custom_update_cover_radius # 使用自定义覆盖范围的计算
         },
@@ -75,16 +75,15 @@ if __name__ == '__main__':
     # import random
     while not done:
         action = {
-            "drone_1": (1, 4),
+            "drone_1": (0, 0),
         }
         states, rewards, truncated, done, infos = ac_env.step(action=action)
-        logger.info(f'SIM: State: \n{dict_to_str(states)} \nReward:\n {rewards}')
+        # logger.info(f'SIM: State: \n{dict_to_str(states)} \nReward:\n {rewards}')
 
-    render_map(
-        trajectories=ac_env.ac_trajectories,
-        veh_trajectories=ac_env.veh_trajectories,
-        # break_spot=ac_env.break_spot,
-        cluster_point = ac_env.cluster_point,
-        img_path=path_convert("./trajectories.jpg")
-    )
+    # render_map(
+    #     trajectories=ac_env.veh_trajectories,
+    #     veh_trajectories=ac_env.ac_trajectories,
+    #     cluster_point = ac_env.cluster_point,
+    #     img_path=path_convert("./test_trajectories.jpg")
+    # )
     ac_env.close()

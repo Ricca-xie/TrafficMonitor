@@ -184,7 +184,7 @@
         <lane id="E6_0" index="0" speed="13.89" length="329.74" shape="325.01,-126.31 635.67,-236.83"/>
     </edge>
     <edge id="E7" from="J6" to="J2" priority="-1">
-        <lane id="E7_0" index="0" speed="13.89" length="146.9" shape="-35.62,-241.33 143.53,-241.67"/>
+        <lane id="E7_0" index="0" speed="13.89" length="179.15" shape="-35.62,-241.33 143.53,-241.67"/>
     </edge>
     <edge id="E8" from="J2" to="J7" priority="-1" shape="150.70,-240.08 151.58,-368.02">
         <lane id="E8_0" index="0" speed="13.89" length="114.65" shape="149.15,-247.26 149.94,-361.91"/>

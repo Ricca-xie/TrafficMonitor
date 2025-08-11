@@ -32,13 +32,13 @@ def render_map(
     # plot_3d_trajectories(ax, trajectories)
     # plot_3d_cluster_points(ax, veh_trajectories, cluster_point)
     # plot_trajectories(ax, trajectories)
-    plot_veh_trajectories(ax, veh_trajectories)
+    # plot_uav_dot(ax, trajectories)
+    # plot_veh_trajectories(ax, veh_trajectories)
     plot_cluster_points(ax, cluster_point)
 
     plt.legend()
     plt.savefig(img_path, dpi=300, bbox_inches='tight')
     plt.show()
-
 
 def plot_3d_trajectories(ax, trajectories):
     """绘制无人机轨迹信息（带时间维度）
@@ -108,6 +108,21 @@ def plot_trajectories(ax, trajectories):
         ax.scatter([x_coords[0]], [y_coords[0]],
                    s=100, c='green', marker='o', label="Start")
 
+def plot_uav_dot(ax, trajectories):
+    """绘制无人机轨迹信息（带时间维度）
+    """
+    for aircraft_id, pos in trajectories.items():
+
+        uav_array = np.array(pos)
+        sampled_indices = np.arange(0, len(uav_array), 5)
+        sampled_points = uav_array[sampled_indices]
+
+        x = sampled_points[:, 0]
+        y = sampled_points[:, 1]
+
+        ax.scatter(x, y, marker='^', c="green", label="TrafficMonitor Cluster points")
+        for i, (x_val, y_val, t_val) in enumerate(zip(x, y, sampled_indices)):
+            ax.text(x_val, y_val, f't={t_val}', color='green', fontsize=5)
 
 def plot_veh_trajectories(ax, veh_trajectories):
     color_map = {
@@ -128,9 +143,20 @@ def plot_veh_trajectories(ax, veh_trajectories):
             x.extend(sampled_points[:, 0])
             y.extend(sampled_points[:, 1])
 
-        ax.scatter(x, y, marker='3', c = color_map.get(prefix), label="vehicle position")
+        ax.scatter(x, y, marker='3', c = 'orange', label="vehicle position") #color_map.get(prefix)
+    #     # for i, (x_val, y_val, t_val) in enumerate(zip(x, y, time_steps)):
+    #     #     ax.text(x_val, y_val, f't={t_val}', color='purple', fontsize=8)
+    # for vehicle_id, pos in veh_trajectories.items():
+    #     cluster_array = np.array(pos)
+    #     time_steps = np.arange(0, len(cluster_array), 10)
+    #     sampled_points = cluster_array[time_steps]
+    #
+    #     x = sampled_points[:, 0]
+    #     y = sampled_points[:, 1]
+    #
+    #     ax.scatter(x, y, marker='3', c='orange', label="vehicle position")  # color_map.get(prefix)
         # for i, (x_val, y_val, t_val) in enumerate(zip(x, y, time_steps)):
-        #     ax.text(x_val, y_val, f't={t_val}', color='purple', fontsize=8)
+        #     ax.text(x_val, y_val, f't={t_val}', color='green', fontsize=3)
 
 
 def plot_cluster_points(ax, cluster_point):
@@ -141,6 +167,6 @@ def plot_cluster_points(ax, cluster_point):
     x = sampled_points[:, 0]
     y = sampled_points[:, 1]
 
-    ax.scatter(x, y, marker='*', c = "red", label="TrafficMonitor Cluster points")
+    ax.scatter(x, y, marker='*', c = "red", label="STCA Cluster points")
     for i, (x_val, y_val, t_val) in enumerate(zip(x, y, sampled_indices)):
-        ax.text(x_val, y_val, f't={t_val}', color='white', fontsize=8)
+        ax.text(x_val, y_val, f't={t_val}', color='white', fontsize=5)

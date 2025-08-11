@@ -53,6 +53,7 @@ class ACEnvWrapper(gym.Wrapper):
             5: (speed, 5),  # ↙ 左下
             6: (speed, 6),  # ↓ 正下
             7: (speed, 7),  # ↘ 右下
+            8: (0, 0),  # 暂停
         }
 
     def  get_relative_ac_pos(self, aircraft_id, pos) -> List:
@@ -75,10 +76,9 @@ class ACEnvWrapper(gym.Wrapper):
         for i in idx:
             p = veh_pos[i]
             cnt = counts[i]
-            if cnt > max_count:
+            if cnt > max_count and cnt > 3:
                 max_count = cnt
                 best_center = p.copy()
-
         for i in idx:
             p1 = veh_pos[i]
             neigh = tree.query_radius([p1], r=2 * radius)[0]
@@ -95,35 +95,10 @@ class ACEnvWrapper(gym.Wrapper):
                 perp = np.array([-diff[1], diff[0]]) * (h / d)
                 for c in (mid + perp, mid - perp):
                     cnt = len(tree.query_radius([c], r=radius)[0])
-                    if cnt > max_count:
+                    if cnt > max_count and cnt > 3:
                         max_count = cnt
                         best_center = c.copy()
         return best_center
-
-    # TODO: compare with density method and K-Mean method
-    def k_mean_find_cluster(self, veh_pos, n_clusters=2):
-        from threadpoolctl import threadpool_limits
-        ###########################################################
-        # 在loop外面先定义一次
-        # mbkm = MiniBatchKMeans(n_clusters=len(veh_pos),
-        #                        batch_size=100,
-        #                        max_iter=1,
-        #                        init='k-means++',)
-        # mbkm.fit(veh_pos) #最初的k-mean
-        ############################################################
-        kmeans = KMeans(
-            n_clusters=n_clusters,
-            init='k-means++',
-            n_init=1,  # 单次初始化加快速度
-            max_iter=1  # 单次迭代
-        )
-        kmeans.fit(veh_pos)
-
-        center = kmeans.cluster_centers_
-        labels = kmeans.labels_
-        count = np.bincount(labels)
-        largest_cluster = np.argmax(count)
-        return center[largest_cluster]
 
     def density_peaks_clustering(self, veh_pos, radius, n_centers=1):
         N = len(veh_pos)
@@ -138,8 +113,13 @@ class ACEnvWrapper(gym.Wrapper):
                 delta[i] = np.max(dist[i])
         gamma = rho * delta
         centers = np.argsort(-gamma)[:n_centers]
-        center_point = veh_pos[centers]
-        center_point = center_point.reshape(-1)
+
+        best_center_idx = centers[0]
+        cluster_size = rho[best_center_idx]+1
+        if cluster_size > 2:
+            center_point = veh_pos[centers]
+            center_point = center_point.reshape(-1)
+        else: return None
         return center_point
 
     @staticmethod
@@ -148,24 +128,29 @@ class ACEnvWrapper(gym.Wrapper):
         penalty = -np.log1p(ratio) / np.log1p(p)
         return penalty
 
+    def break_spot_reward(self, dist, cover_radius):
+        spot_dist = np.linalg.norm(dist)
+        if spot_dist <= cover_radius:
+            return 2
+        else:
+            penalty = self.distance_penalty(spot_dist - cover_radius, cover_radius, p=25)
+            return penalty * 0.45
+
     def prune_old_vehicles(self, current_veh_ids):
         # 删掉消失的车辆
         self.latest_veh_pos = {vid: pos for vid, pos in self.latest_veh_pos.items() if vid in current_veh_ids}
 
     @property
     def action_space(self):
-        return gym.spaces.Discrete(8)
+        return gym.spaces.Discrete(9)
     
     @property
     def observation_space(self):
         spaces = {
             "ac_attr": gym.spaces.Box(low=np.zeros((9,)), high=np.ones((9,)), shape=(9,)), # (1,9)
-            "relative_vecs": gym.spaces.Box(low=-np.inf, high=np.inf, shape=(20,2), dtype=np.float32), # (1,20,2)
-            # "relative_vecs": gym.spaces.Box(low=-np.inf, high=np.inf, shape=(40, ), dtype=np.float32),  # (1,20,2)
+            "relative_vecs": gym.spaces.Box(low=-np.inf, high=np.inf, shape=(40,2), dtype=np.float32), # (1,20,2)
             "cover_counts": gym.spaces.Box(low=0, high=np.inf, shape=(1,)), # (1,1)
-            # "bound_dist": gym.spaces.Box(low=np.zeros((2,)), high=np.ones((2,)), shape=(2,)), # (1,2)
             "break_spot": gym.spaces.Box(low=-np.inf, high=np.inf, shape=(2,)), # (1,2)
-            "no_vehicles": gym.spaces.Box(low=0, high=1, shape=(1,)), # (1,1)
         }
         dict_space = gym.spaces.Dict(spaces)
         return dict_space
@@ -193,10 +178,8 @@ class ACEnvWrapper(gym.Wrapper):
         else:
             max_count = 0
 
-        dist_to_bound = []
         relative_vecs = []
         cover_counts = [0]
-        no_veh = 1
 
         for aircraft_id, aircraft_info in aircraft.items():
             if aircraft_info['aircraft_type'] != 'drone':
@@ -211,7 +194,7 @@ class ACEnvWrapper(gym.Wrapper):
             self.ac_trajectories[aircraft_id].append(ac_pos)
             vehicle_state = {}
 
-            break_spot_vec = -np.array(ac_pos[:2])
+            self.break_spot = -np.array(ac_pos[:2])
 
             for vehicle_id, vehicle_info in veh.items():
 
@@ -232,31 +215,23 @@ class ACEnvWrapper(gym.Wrapper):
             cover_counts = np.array([len(vehicle_state)])
             new_state[aircraft_id] = vehicle_state
 
-            has_veh = any(len(veh_list) > 0 for veh_list in self.latest_veh_pos.values())
-            no_veh = 1 if not has_veh else 0
-            self.break_spot = break_spot_vec * no_veh
-            # self.break_spot = [0,0]
-
         if max_count > 0:
             self.cover_efficiency = cover_counts / max_count
         else: self.cover_efficiency = None
 
         if len(relative_vecs) == 0:
-            relative_vecs = np.zeros((20, 2))
+            relative_vecs = np.zeros((40, 2))
         else:
-            relative_vecs = np.array(relative_vecs[:20])
-            if relative_vecs.shape[0] < 20:
-                pad = np.zeros((20 - relative_vecs.shape[0], 2))
+            relative_vecs = np.array(relative_vecs[:40])
+            if relative_vecs.shape[0] < 40:
+                pad = np.zeros((40 - relative_vecs.shape[0], 2))
                 relative_vecs = np.vstack((relative_vecs, pad))
 
         feature_set = {
             "ac_attr": np.array(self._pos_set).reshape(-1), # 无人机历史坐标，对无人机起点的相对坐标
             "relative_vecs": np.array(relative_vecs), # 车辆实时位置，对无人机起点的相对坐标
-            # "relative_vecs": np.array(relative_vecs).reshape(-1),
             "cover_counts": cover_counts,
-            # "bound_dist": dist_to_bound.reshape(1,-1).squeeze(),
             "break_spot": np.array(self.break_spot).reshape(-1), # 休息点，对无人机起点的相对坐标
-            "no_vehicles": np.array(no_veh).reshape(-1) # bool，作为relative_vecs的mask使用
         }
 
         return feature_set, new_state
@@ -274,32 +249,28 @@ class ACEnvWrapper(gym.Wrapper):
                 veh_poses = np.array(list(self.latest_veh_pos.values()))
                 best_center = self.compute_cover_center(veh_pos=veh_poses, radius=cover_radius) # KD-Tree Method
                 # best_center = self.density_peaks_clustering(veh_poses, cover_radius) # Density Map Method
-                # if len(veh_poses) > 2: # Vehicle amount must greater than cluster amount
-                #     best_center = self.k_mean_find_cluster(veh_poses) # KMeans Method
                 if best_center is not None:
                     self.cluster_point.append(best_center + np.array(aircraft_pos[:2]))
-                m_dist = np.linalg.norm(best_center)
-                if m_dist <= cover_radius + 10:
-                    if len(vehicle_info) != 0:
-                        reward += len(vehicle_info)
-                else:
-                    penalty = self.distance_penalty(m_dist - cover_radius, cover_radius, p=25)
-                    reward += penalty * 0.45
-
+                    m_dist = np.linalg.norm(best_center)
+                    if m_dist <= cover_radius + 5:
+                        if len(vehicle_info) != 0:
+                            reward += len(vehicle_info)
+                    else:
+                        penalty = self.distance_penalty(m_dist - cover_radius, cover_radius, p=25)
+                        reward += penalty * 0.45
+                else:  # 车团大小小于2时让无人机返回休息点
+                    reward += self.break_spot_reward([_x,_y],cover_radius)
+                    # print(self.break_spot_reward([_x,_y],cover_radius))
             else:  # 无车环境让无人机返回休息点
-                spot_dist = np.linalg.norm([_x, _y])
-                if spot_dist <= cover_radius:
-                    reward += 2  # 1, 2, 3
-                else:
-                    penalty = self.distance_penalty(spot_dist - cover_radius, cover_radius, p=25)
-                    reward += penalty * 0.45
+                reward += self.break_spot_reward([_x,_y],cover_radius)
+                # print(self.break_spot_reward([_x, _y], cover_radius))
 
             bound_penalty = 0
             # 靠近边界100米每步扣5分
-            if abs(_y) > (self.y_range - 100):
+            if abs(_y) > (self.y_range - 50):
                 bound_penalty = -5
                 reward += bound_penalty
-            if abs(_x) > (self.x_range - 100):
+            if abs(_x) > (self.x_range - 50):
                 bound_penalty = -5
                 reward += bound_penalty
             # 超过边界扣100分并结束episode
@@ -314,7 +285,6 @@ class ACEnvWrapper(gym.Wrapper):
                 reward += bound_penalty
                 return reward, dones
 
-            # print("drone position:",_x, _y, reward)
         return reward, dones
 
     def reset(self, seed=1) -> Tuple[Any, Dict[str, Any]]:
@@ -332,11 +302,6 @@ class ACEnvWrapper(gym.Wrapper):
         # old_pos = self.latest_ac_pos['drone_1']
         if isinstance(action, np.int64):
             new_actions["drone_1"] = self.air_actions[action]
-            #self.last_action = {"drone_1": action}
-        # else:
-        #     new_actions = {}
-        #     for key, value in action.items():
-        #         new_actions[key] = self.air_actions[value]
         elif isinstance(action, dict):
             new_actions = {}
             for key, value in action.items():
@@ -352,8 +317,6 @@ class ACEnvWrapper(gym.Wrapper):
         states, rewards, truncated, dones, infos = super().step(new_actions) # 与环境交互
         feature_set, veh_states = self.state_wrapper(state=states) # 处理 state
         rewards, dones = self.reward_wrapper(states=veh_states,dones=dones) # 处理 reward
-
-        # print('new action',new_actions['drone_1'])
 
         return feature_set, rewards, truncated, dones, infos
     

@@ -108,8 +108,7 @@ if __name__ == '__main__':
     env = SubprocVecEnv([make_env(env_index=f'{i}', **params) for i in range(args.num_envs)]) # multiprocess
     # env = VecNormalize(env, norm_obs=False, norm_reward=True)
     env = VecNormalize(env, norm_obs=True, norm_obs_keys=[
-        "ac_attr","relative_vecs", "cover_counts", "break_spot", "no_vehicles"], norm_reward=True)
-        #"ac_attr", "relative_vecs", "break_spot"], norm_reward = True)
+        "ac_attr","relative_vecs", "break_spot"], norm_reward=True)
     # env = VecNormalize(env, norm_obs=False, norm_reward=True)
 
     # #########

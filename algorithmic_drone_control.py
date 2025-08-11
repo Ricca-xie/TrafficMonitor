@@ -33,7 +33,9 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from env_utils.ac_env import ACEnvironment
 from env_utils.ac_wrapper import ACEnvWrapper
+from env_utils.vis_snir import render_map
 from tshub.utils.get_abs_path import get_abs_path
+
 path_convert = get_abs_path(__file__)
 
 def custom_update_cover_radius(position:List[float], communication_range:float) -> float:
@@ -140,8 +142,8 @@ class DronePathPlanner:
         if target_pos is None:
             return random.randint(0,7)
         # Calculate direction vector
-        dx = target_pos[0] - drone_pos[0]
-        dy = target_pos[1] - drone_pos[1]
+        dx = target_pos[0]
+        dy = target_pos[1]
         
         # Determine action based on direction
         # Action mapping: 0=Right, 1=Up-Right, 2=Up, 3=Up-Left, 4=Left, 5=Down-Left, 6=Down, 7=Down-Right
@@ -296,23 +298,23 @@ class AlgorithmicDroneController:
         # Clear screen
         os.system('cls' if os.name == 'nt' else 'clear')
         
-        print("="*60)
-        print("ALGORITHMIC DRONE CONTROL - DENSITY PEAKS CLUSTERING")
-        print("="*60)
-        print(f"Drone Position: ({drone_pos[0]:.1f}, {drone_pos[1]:.1f}, {drone_pos[2]:.1f})")
-        print(f"Current Target: {self.current_target if self.current_target else 'None'}")
-        print(f"Covered Vehicles: {cover_count}")
-        print(f"Total Vehicles: {len(vehicle_positions)}")
-        print(f"Current Reward: {reward:.2f}")
-        print(f"Episode Reward: {self.current_episode_reward:.2f}")
-        print(f"Episode Steps: {self.current_episode_steps}")
-        print()
-        print("Algorithm Status:")
-        print(f"  Steps since target update: {self.steps_since_update}")
-        print(f"  Clustering centers found: {len(vehicle_positions) > 0}")
-        print("="*60)
+        # print("="*60)
+        # print("ALGORITHMIC DRONE CONTROL - DENSITY PEAKS CLUSTERING")
+        # print("="*60)
+        # print(f"Drone Position: ({drone_pos[0]:.1f}, {drone_pos[1]:.1f}, {drone_pos[2]:.1f})")
+        # print(f"Current Target: {self.current_target if self.current_target is not None else 'None'}")
+        # print(f"Covered Vehicles: {cover_count}")
+        # print(f"Total Vehicles: {len(vehicle_positions)}")
+        # print(f"Current Reward: {reward:.2f}")
+        # print(f"Episode Reward: {self.current_episode_reward:.2f}")
+        # print(f"Episode Steps: {self.current_episode_steps}")
+        # print()
+        # print("Algorithm Status:")
+        # print(f"  Steps since target update: {self.steps_since_update}")
+        # print(f"  Clustering centers found: {len(vehicle_positions) > 0}")
+        # print("="*60)
     
-    def run_algorithmic_control(self, max_episodes: int = 10):
+    def run_algorithmic_control(self, max_episodes: int = 1):
         """Main loop for algorithmic drone control"""
         print("Starting Algorithmic Drone Control")
         print("Algorithm: Density Peaks Clustering for Endpoint Calculation")

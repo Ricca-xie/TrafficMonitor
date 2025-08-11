@@ -41,7 +41,7 @@ if __name__ == '__main__':
     parser.add_argument('--num_envs', type=int, default=1, help='The number of environments')
     parser.add_argument('--policy_model', type=str, default="fusion", help='policy network: baseline_models or fusion_models_0')
     parser.add_argument('--features_dim', type=int, default=512, help='The dimension of output features 64')
-    parser.add_argument('--num_seconds', type=int, default=200, help='exploration steps')
+    parser.add_argument('--num_seconds', type=int, default=700, help='exploration steps')
     parser.add_argument('--n_steps', type=int, default=512, help='The number of steps in each environment') #500
     parser.add_argument('--lr', type=float, default=5e-4, help='The learning rate of PPO') #5e-5
     parser.add_argument('--batch_size', type=int, default=32, help='The batch size of PPO')
@@ -76,16 +76,13 @@ if __name__ == '__main__':
     params = {
         'num_seconds': args.num_seconds,
         'sumo_cfg': sumo_cfg,
-        'use_gui': False,
+        'use_gui': True,
         'log_file': log_path,
         'aircraft_inits': aircraft_inits,
     }
     param_name = f'explore_700_n_steps_{args.n_steps}_lr_{str(args.lr)}_batch_size_{args.batch_size}'
 #{args.num_seconds}
     env = SubprocVecEnv([make_env(env_index=f'{i}', **params) for i in range(args.num_envs)])  # multiprocess
-    # env = VecNormalize(env, norm_obs=False, norm_reward=True)
-    # env = VecNormalize(env, norm_obs=True, norm_obs_keys=[
-    #     "ac_attr","relative_vecs", "cover_counts", "bound_dist", "break_spot","no_vehicles"], norm_reward=True)
     env = VecNormalize.load(load_path=path_convert(f'Result/{args.env_name}/speed_{args.speed}/{args.policy_model}/{param_name}/models/best_vec_normalize.pkl'), venv=env)
 
     env.training = False  # 测试的时候不要更新
@@ -109,23 +106,23 @@ if __name__ == '__main__':
         action, _state = model.predict(obs, deterministic=True)
         obs, rewards, dones, infos = env.step(action)
         total_reward += rewards
-        cover_efficiency = env.get_attr('cover_efficiency')[0]
-        total_steps += 1
-        if cover_efficiency is None:
-            continue
-        efficiency = [i+j for i,j in zip(efficiency, cover_efficiency)]
-        count += 1
-        # print(rewards)
+        # cover_efficiency = env.get_attr('cover_efficiency')[0]
+        # total_steps += 1
+        # if cover_efficiency is None:
+        #     continue
+        # efficiency = [i+j for i,j in zip(efficiency, cover_efficiency)]
+        # count += 1
+        print(rewards)
 
-    render_map(
-        trajectories=env.get_attr('ac_trajectories')[0],
-        veh_trajectories=env.get_attr('veh_trajectories')[0],
-        cluster_point=env.get_attr('cluster_point')[0],
-        img_path=path_convert("./trajectories.jpg")
-    )
+    # render_map(
+    #     trajectories=env.get_attr('ac_trajectories')[0],
+    #     veh_trajectories=env.get_attr('veh_trajectories')[0],
+    #     cluster_point=env.get_attr('cluster_point')[0],
+    #     img_path=path_convert("./temp_trajectories.jpg")
+    # )
 
     env.close()
-    print(f"total count:{count}.")
-    print(f'cover_efficiency, {np.array(efficiency)/count}.')
+    # print(f"total count:{count}.")
+    # print(f'cover_efficiency, {np.array(efficiency)/count}.')
     print(f'累积奖励为, {total_reward}.')
     print(f"total steps:{total_steps}.")

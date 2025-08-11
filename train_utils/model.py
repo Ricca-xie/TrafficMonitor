@@ -10,10 +10,8 @@ class CustomModelWithTrans(BaseFeaturesExtractor):
 
         ac_shape = observation_space["ac_attr"].shape[0]
         rv_shape = observation_space["relative_vecs"].shape
-        # bd_shape = observation_space["bound_dist"].shape[0]
         cc_shape = observation_space["cover_counts"].shape[0]
         bs_shape = observation_space["break_spot"].shape[0]
-        nv_shape = observation_space["no_vehicles"].shape[0]
 
         self.hidden_dim = 32
 
@@ -29,20 +27,8 @@ class CustomModelWithTrans(BaseFeaturesExtractor):
             nn.Linear(64, self.hidden_dim),
             nn.ReLU()
         )
-        # self.bnd_net = nn.Sequential(
-        #     nn.Linear(bd_shape, 64),
-        #     nn.ReLU(),
-        #     nn.Linear(64, self.hidden_dim),
-        #     nn.ReLU(),
-        # )
         self.cc_net = nn.Sequential(
             nn.Linear(cc_shape, 64),
-            nn.ReLU(),
-            nn.Linear(64, self.hidden_dim),
-            nn.ReLU(),
-        )
-        self.hv_net = nn.Sequential(
-            nn.Linear(nv_shape, 64),
             nn.ReLU(),
             nn.Linear(64, self.hidden_dim),
             nn.ReLU(),
@@ -53,7 +39,7 @@ class CustomModelWithTrans(BaseFeaturesExtractor):
         )
 
         self.output = nn.Sequential(
-            nn.Linear(32 + 32 + 32 + 32 +32, features_dim),
+            nn.Linear(32 + 32 + 32 + 32, features_dim),
             nn.ReLU(),
         )
 
@@ -61,19 +47,12 @@ class CustomModelWithTrans(BaseFeaturesExtractor):
         ac_attr = obs['ac_attr']
         rel_vecs = obs['relative_vecs']
         brk_spot = obs['break_spot']
-        # bnd_dist = obs['bound_dist']
         cov_cnt = obs['cover_counts']
-        no_veh = obs['no_vehicles']
-        # for k, v in obs.items():
-        #     print(k,"shape",v.shape)
 
         z_attr = self.attr_net(ac_attr)
         z_brk = self.brk_net(brk_spot)
         z_rel  = self.trans_extractor(rel_vecs)
 
-        # z_bnd = self.bnd_net(bnd_dist)
         z_cc = self.cc_net(cov_cnt)
-        z_veh = self.hv_net(no_veh)
-        #all_feature_output = self.output(torch.cat([z_attr, z_brk, z_rel], dim=1))
-        all_feature_output = self.output(torch.cat([z_attr, z_brk, z_rel,z_cc, z_veh], dim=1))
+        all_feature_output = self.output(torch.cat([z_attr, z_brk, z_rel,z_cc], dim=1))
         return all_feature_output
