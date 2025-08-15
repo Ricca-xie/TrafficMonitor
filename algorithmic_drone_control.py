@@ -168,7 +168,7 @@ class DronePathPlanner:
             return 6  # Down
         elif -67.5 <= angle_deg < -22.5:
             return 7  # Down-Right
-        else: return random.randint(0,7)
+        else: return 8
 
 
 class AlgorithmicDroneController:

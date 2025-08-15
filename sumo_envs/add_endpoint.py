@@ -1,6 +1,6 @@
 from pathlib import Path
 
-file_path = Path("C:\TrafficMonitor\TrafficMonitor\sumo_envs\LONG_GANG\env\osm.rou.xml")
+file_path = Path("/sumo_envs/LONG_GANG/env/osm.rou.xml")
 with open(file_path, "r", encoding="utf-8") as f:
     lines = f.readlines()
 
@@ -23,6 +23,6 @@ for line in lines:
     if not replaced:
         modified_lines.append(line)
 
-output_path = "C:\TrafficMonitor\TrafficMonitor\sumo_envs\LONG_GANG\env\osm.rou.xml"
+output_path = "/sumo_envs/LONG_GANG/env/osm.rou.xml"
 with open(output_path, "w", encoding="utf-8") as f:
     f.writelines(modified_lines)

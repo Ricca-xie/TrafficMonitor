@@ -7,7 +7,7 @@
 
     <input>
         <net-file value="resized_rectangle.net.xml"/>
-        <route-files value="osm.rou.xml"/>
+        <route-files value="resized_road.rou.xml"/>
     </input>
 
 </configuration>

@@ -10,15 +10,15 @@
 
   <!-- ================= 次要道路零星车辆 ================= -->
   <!-- 下左上到右下 (1125691753#1 219060439#2 219060439#3) -->
-  <flow id="side1_flow" type="ego" begin="0" end="200" period="30">
+  <flow id="side1_flow" type="ego" begin="0" end="1200" period="30">
     <route edges="1125691753#1 219060439#2 219060439#3"/>
   </flow>
   <!-- 左下到右上 (1125695391#0.789 1125695392#0 1125695392#7.174) -->
-  <flow id="side2_flow" type="ego" begin="0" end="200" period="30">
+  <flow id="side2_flow" type="ego" begin="0" end="1200" period="30">
     <route edges="1125695391#0.789 1125695392#0 1125695392#7.174"/>
   </flow>
   <!-- 上右下到左上 (E3 1125793701#2 1125793701#3 E0) -->
-  <flow id="side3_flow" type="ego" begin="0" end="200" period="30">
+  <flow id="side3_flow" type="ego" begin="0" end="1200" period="30">
     <route edges="E3 1125793701#2 1125793701#3 E0"/>
   </flow>
 
@@ -33,10 +33,10 @@
 
 
   <!-- 波次2 (65秒)：2号路(10辆) + 3号路(5辆) -->
-  <flow id="route2_wave2" type="ego" begin="300" number="13" period="0.75" departLane="random">
+  <flow id="route2_wave2" type="ego" begin="350" number="13" period="0.75" departLane="random">
     <route edges="219056200#2 219058189#2 219058189#3"/>
   </flow>
-  <flow id="route3_wave2" type="ego" begin="303" number="6" period="0.5" departLane="random">
+  <flow id="route3_wave2" type="ego" begin="353" number="6" period="0.5" departLane="random">
     <route edges="1131230259#0 239700065#3 239700065#4 1125678574 1125597093#1"/>
   </flow>
 

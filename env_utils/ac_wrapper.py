@@ -31,10 +31,11 @@ class ACEnvWrapper(gym.Wrapper):
         super().__init__(env)
         self._pos_set = deque([self._get_initial_state()] * max_states, maxlen=max_states)  # max state : 3
         self.speed = aircraft_inits["drone_1"]["speed"]
-        self.x_range, self.y_range, self.break_spot = (None, None, None)
+        self.x_range, self.y_range = None, None
         self.initial_points = {
             ac_id: ac_value["position"] for ac_id, ac_value in aircraft_inits.items()
         }
+        self.break_spot = np.array([0, 0])
         self.latest_ac_pos = {}
         self.latest_veh_pos = {}
         self.latest_cover_radius = {}
@@ -54,6 +55,9 @@ class ACEnvWrapper(gym.Wrapper):
             6: (speed, 6),  # ↓ 正下
             7: (speed, 7),  # ↘ 右下
             8: (0, 0),  # 暂停
+            9: (0, 2),  # 暂停
+            10: (0, 4),  # 暂停
+            11: (0, 6),  # 暂停
         }
 
     def  get_relative_ac_pos(self, aircraft_id, pos) -> List:
@@ -116,7 +120,7 @@ class ACEnvWrapper(gym.Wrapper):
 
         best_center_idx = centers[0]
         cluster_size = rho[best_center_idx]+1
-        if cluster_size > 2:
+        if cluster_size > 3:
             center_point = veh_pos[centers]
             center_point = center_point.reshape(-1)
         else: return None
@@ -131,10 +135,10 @@ class ACEnvWrapper(gym.Wrapper):
     def break_spot_reward(self, dist, cover_radius):
         spot_dist = np.linalg.norm(dist)
         if spot_dist <= cover_radius:
-            return 2
+            return 4 # 3.5 4 2
         else:
             penalty = self.distance_penalty(spot_dist - cover_radius, cover_radius, p=25)
-            return penalty * 0.45
+            return penalty #* 0.45
 
     def prune_old_vehicles(self, current_veh_ids):
         # 删掉消失的车辆
@@ -142,8 +146,8 @@ class ACEnvWrapper(gym.Wrapper):
 
     @property
     def action_space(self):
-        return gym.spaces.Discrete(9)
-    
+        return gym.spaces.Discrete(12)
+
     @property
     def observation_space(self):
         spaces = {
@@ -181,6 +185,8 @@ class ACEnvWrapper(gym.Wrapper):
         relative_vecs = []
         cover_counts = [0]
 
+        # self.break_spot = np.array([0, 0])
+
         for aircraft_id, aircraft_info in aircraft.items():
             if aircraft_info['aircraft_type'] != 'drone':
                 continue
@@ -194,10 +200,9 @@ class ACEnvWrapper(gym.Wrapper):
             self.ac_trajectories[aircraft_id].append(ac_pos)
             vehicle_state = {}
 
-            self.break_spot = -np.array(ac_pos[:2])
+            # self.break_spot = -np.array(ac_pos[:2])
 
             for vehicle_id, vehicle_info in veh.items():
-
                 vehicle_pos = vehicle_info['position']
                 veh_pos = self.get_relative_pos(aircraft_id, vehicle_pos)
                 self.veh_trajectories[vehicle_id].append(veh_pos)
@@ -205,8 +210,8 @@ class ACEnvWrapper(gym.Wrapper):
                 dy = veh_pos[1] - ac_pos[1]
 
                 self.latest_veh_pos[vehicle_id] = [dx,dy]
-                relative_vecs.append([dx, dy])
-                # relative_vecs.append(veh_pos)
+                # relative_vecs.append([dx, dy])
+                relative_vecs.append(veh_pos)
 
                 dist = math.hypot(dx, dy)
                 if dist <= cover_radius:
@@ -226,14 +231,12 @@ class ACEnvWrapper(gym.Wrapper):
             if relative_vecs.shape[0] < 40:
                 pad = np.zeros((40 - relative_vecs.shape[0], 2))
                 relative_vecs = np.vstack((relative_vecs, pad))
-
         feature_set = {
             "ac_attr": np.array(self._pos_set).reshape(-1), # 无人机历史坐标，对无人机起点的相对坐标
             "relative_vecs": np.array(relative_vecs), # 车辆实时位置，对无人机起点的相对坐标
             "cover_counts": cover_counts,
             "break_spot": np.array(self.break_spot).reshape(-1), # 休息点，对无人机起点的相对坐标
         }
-
         return feature_set, new_state
 
     def reward_wrapper(self, states, dones) -> float:
@@ -257,16 +260,14 @@ class ACEnvWrapper(gym.Wrapper):
                             reward += len(vehicle_info)
                     else:
                         penalty = self.distance_penalty(m_dist - cover_radius, cover_radius, p=25)
-                        reward += penalty * 0.45
+                        reward += penalty #* 0.45
                 else:  # 车团大小小于2时让无人机返回休息点
                     reward += self.break_spot_reward([_x,_y],cover_radius)
-                    # print(self.break_spot_reward([_x,_y],cover_radius))
             else:  # 无车环境让无人机返回休息点
                 reward += self.break_spot_reward([_x,_y],cover_radius)
-                # print(self.break_spot_reward([_x, _y], cover_radius))
 
             bound_penalty = 0
-            # 靠近边界100米每步扣5分
+            # 靠近边界50米每步扣5分
             if abs(_y) > (self.y_range - 50):
                 bound_penalty = -5
                 reward += bound_penalty

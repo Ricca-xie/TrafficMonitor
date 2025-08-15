@@ -54,5 +54,5 @@ class CustomModelWithTrans(BaseFeaturesExtractor):
         z_rel  = self.trans_extractor(rel_vecs)
 
         z_cc = self.cc_net(cov_cnt)
-        all_feature_output = self.output(torch.cat([z_attr, z_brk, z_rel,z_cc], dim=1))
+        all_feature_output = self.output(torch.cat([z_attr, z_brk, z_rel, z_cc], dim=1))
         return all_feature_output

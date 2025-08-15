@@ -22,7 +22,6 @@ from env_utils.vis_snir import render_map
 path_convert = get_abs_path(__file__)
 logger.remove()
 
-
 def custom_update_cover_radius(position:List[float], communication_range:float) -> float:
     """自定义的更新地面覆盖半径的方法, 在这里实现您的自定义逻辑
 
@@ -37,6 +36,7 @@ def custom_update_cover_radius(position:List[float], communication_range:float) 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Parameters.')
     parser.add_argument('--env_name', type=str, default="LONG_GANG", help='The name of environment')
+    # parser.add_argument('--env_name', type=str, default="Nguyen_Dupuis", help='The name of environment')
     parser.add_argument('--speed', type=int, default=160, help="100,160,320") # speed决定了地图的scale
     parser.add_argument('--num_envs', type=int, default=1, help='The number of environments')
     parser.add_argument('--policy_model', type=str, default="fusion", help='policy network: baseline_models or fusion_models_0')
@@ -66,7 +66,7 @@ if __name__ == '__main__':
         'drone_1': {
             "aircraft_type": "drone",
             "action_type": "horizontal_movement", # combined_movement
-            # "position": (0, 0, 30), "speed": 10, "heading": (1, 1, 0), "communication_range": 50,
+            # "position": (0, 0, 50), "speed": 10, "heading": (1, 1, 0), "communication_range": 50,
             "position": (1750, 1000, 50), "speed": 10, "heading": (1, 1, 0), "communication_range": 50,
             "if_sumo_visualization": True, "img_file": path_convert('./asset/drone.png'),
             "custom_update_cover_radius": custom_update_cover_radius  # 使用自定义覆盖范围的计算
@@ -80,8 +80,7 @@ if __name__ == '__main__':
         'log_file': log_path,
         'aircraft_inits': aircraft_inits,
     }
-    param_name = f'explore_700_n_steps_{args.n_steps}_lr_{str(args.lr)}_batch_size_{args.batch_size}'
-#{args.num_seconds}
+    param_name = f'explore_{args.num_seconds}_n_steps_{args.n_steps}_lr_{str(args.lr)}_batch_size_{args.batch_size}'
     env = SubprocVecEnv([make_env(env_index=f'{i}', **params) for i in range(args.num_envs)])  # multiprocess
     env = VecNormalize.load(load_path=path_convert(f'Result/{args.env_name}/speed_{args.speed}/{args.policy_model}/{param_name}/models/best_vec_normalize.pkl'), venv=env)
 

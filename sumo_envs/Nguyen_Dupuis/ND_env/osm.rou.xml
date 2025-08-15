@@ -4,7 +4,7 @@
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/jtrrouterConfiguration.xsd">
 
     <input>
-        <net-file value="C:\Users\ricca\OneDrive\OneDrive - CUHK-Shenzhen\RA_419\UAV_Path_planing\code\UAV-main\aircraft-main\sumo_envs\OSM\./ND_env/rectangle.net.xml"/>
+        <net-file value="C:\Users\ricca\OneDrive\OneDrive - CUHK-Shenzhen\RA_419\UAV_Path_planing\code\UAV-main\aircraft-main\sumo_envs\OSM\./ND_env/resized_rectangle.net.xml"/>
         <route-files value="C:\Users\ricca\OneDrive\OneDrive - CUHK-Shenzhen\RA_419\UAV_Path_planing\code\UAV-main\aircraft-main\sumo_envs\OSM\./ND_env/testflow.trip.xml"/>
         <turn-ratio-files value="C:\Users\ricca\OneDrive\OneDrive - CUHK-Shenzhen\RA_419\UAV_Path_planing\code\UAV-main\aircraft-main\sumo_envs\OSM\./ND_env/testflow.turndefs.xml"/>
     </input>
